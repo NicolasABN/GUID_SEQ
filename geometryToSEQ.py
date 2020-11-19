@@ -104,3 +104,31 @@ class Trajectoire(object):
     def __repr__(self):
         return str(self.path_list)
 
+class Waypoint(Point):
+    """Définit une classe qui hérite de Point avec un id pour identifer le waypoint"""
+    def __init__(self,id,x,y):
+        super().__init__(x,y)
+        self.id=id
+
+        
+class Aircraft(Point):
+    
+    def __init__(self,x,y,hdg):
+        super().__init__(x,y)
+        self.hdg=hdg
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

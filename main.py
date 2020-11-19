@@ -11,7 +11,7 @@ import time
 
 if __name__=='__main__':
     app_name="GUID_SEQ_APP"
-    ivy_bus="192.168.43.255:2010"
+    ivy_bus="127.0.0.1:2010"
     bus=IvyInit(app_name,"GUID_SEQ is Ready",0,on_cx,on_die)
     IvyStart(ivy_bus)
     time.sleep(1)
@@ -25,7 +25,7 @@ if __name__=='__main__':
     IvyBindMsg(recepSegments,'^GT_TRAJ Liste_Segments=(.*)') # Reception des segments
     IvyBindMsg(recepTransitions,'^GT_TRAJ Liste_Transitions=(.*)') # Reception des transitions
     IvyBindMsg(recepPaths,'^GT_TRAJ TRAJ_Paths=(.*)') # Reception des paths
-    
+    IvyBindMsg(recepHeading,'^AircraftSetPosition X=(.*) Heading=(.*) Airspeed=(.*)')
     IvyBindMsg(recepStateVector,'^StateVector x=(.*) y=(.*) z=(.*)') # Reception du vecteur d'état 
     IvyMainLoop()
     

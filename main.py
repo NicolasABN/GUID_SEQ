@@ -25,7 +25,6 @@ if __name__=='__main__':
     IvyBindMsg(recepSegments,'^GT_TRAJ Liste_Segments=(.*)') # Reception des segments
     IvyBindMsg(recepTransitions,'^GT_TRAJ Liste_Transitions=(.*)') # Reception des transitions
     IvyBindMsg(recepPaths,'^GT_TRAJ TRAJ_Paths=(.*)') # Reception des paths
-    IvyBindMsg(recepHeading,'^AircraftSetPosition X=(.*) Heading=(.*) Airspeed=(.*)')
-    IvyBindMsg(recepStateVector,'^StateVector x=(.*) y=(.*) z=(.*)') # Reception du vecteur d'état 
+    IvyBindMsg(recepStateVector,'^StateVector x=(.*) y=(.*) z=(.*) Vp=(.*) fpa=(.*) psi=(.*) phi=(.*)') # Reception du vecteur d'état 
     IvyMainLoop()
     

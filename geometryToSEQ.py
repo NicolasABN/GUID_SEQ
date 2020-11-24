@@ -98,6 +98,7 @@ class Path(object):
         self.transition = transition
         self.boolorth = True  
         self.booltrans = False
+        self.boolactive = True
         
     def __repr__(self):
         return(self.boolorth, self.booltrans)

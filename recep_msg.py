@@ -6,14 +6,6 @@ import time
 from send_msg import *
 from geometryToSEQ import *
 
-_AIRCRAFT=Aircraft(0,0,0)
-_LEGLIST=[]
-_ACTIVELEG=0
-_TOWPT=''
-_LISTPOINTS=[]
-_LISTSEGMENTS=[]
-_LISTTRANSITIONS=[]
-_LISTPATHS=[]
 
 def on_cx(agent, connected):
     pass

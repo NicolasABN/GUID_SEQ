@@ -96,6 +96,11 @@ class Path(object):
     def __init__(self, ortho, transition):
         self.ortho = ortho
         self.transition = transition
+        self.boolorth = True  
+        self.booltrans = False
+        
+    def __repr__(self):
+        return(self.boolorth, self.booltrans)
 
 class Trajectoire(object):
     def __init__(self):

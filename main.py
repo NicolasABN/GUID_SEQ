@@ -23,8 +23,9 @@ if __name__=='__main__':
     
     IvyBindMsg(recepPoints,'^GT_TRAJ Liste_Points=(.*)') # Reception des points
     IvyBindMsg(recepSegments,'^GT_TRAJ Liste_Segments=(.*)') # Reception des segments
+    IvyBindMsg(recepOrthos, '^GT_TRAJ Liste_Orthos=(.*)')
     IvyBindMsg(recepTransitions,'^GT_TRAJ Liste_Transitions=(.*)') # Reception des transitions
-    IvyBindMsg(recepPaths,'^GT_TRAJ TRAJ_Paths=(.*)') # Reception des paths
+    IvyBindMsg(recepPaths,'^GT_TRAJ Liste_Paths=(.*)') # Reception des paths
     IvyBindMsg(recepStateVector,'^StateVector x=(.*) y=(.*) z=(.*) Vp=(.*) fpa=(.*) psi=(.*) phi=(.*)') # Reception du vecteur d'état 
     IvyMainLoop()
     

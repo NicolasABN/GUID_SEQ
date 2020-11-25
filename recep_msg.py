@@ -44,16 +44,24 @@ def recepPoints(*arg):
     print(g._LISTPOINTS)
     
 def recepSegments(*arg):
+    Liste_Points=g._LISTPOINTS
     L=arg[1].strip()
     g._LISTSEGMENTS=eval(L)
     print(g._LISTSEGMENTS)
+    
+def recepOrthos(*arg):
+    Liste_Points=g._LISTPOINTS
+    L=arg[1].strip()
+    g._LISTORTHOS=eval(L)
+    
     
 def recepTransitions(*arg):
     L=arg[1].strip()
     g._LISTTRANSITIONS=eval(L)
     print(g._LISTTRANSITIONS)
-    
+        
 def recepPaths(*arg):
+    Liste_Orthos, Liste_Transitions = g._LISTORTHOS, g.LISTTRANSITIONS
     L=arg[1].strip()
     g._LISTPATHS=eval(L)
     

@@ -43,7 +43,24 @@ def active_leg(legs_list):  # renvoie la leg active et la supprime
     return active_leg,legs_list
 
 
-#def distanceAlongPath(aircraft, waypoint, )
+def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading vers la trajectoire; heading entre nordMag et cap
+    
+    if path.boolorth==True and path.booltrans==False:
+        angle=atan((path.ortho.end.y-path.ortho.start.y)/(path.ortho.end.x-path.ortho.start.x))-pi/2
+        return angle+aircraft.hdg
+  
+    if path.boolorth==False and path.booltrans==True:
+        xc, yc = path.transition.centre.x, path.transition.centre.y
+        a=(yc-aircraft.y)/(xc-aircraft.x)    # Attention au cas ou droite verticale ou horizontale
+        if a==0:
+            angle=0
+        else:    
+            angle= atan(-1/a)-pi/2
+        return angle+aircraft.hdg
+        
+
+    
+    
 
 def transition_distance(p1,p2,transition): # Calcul la distance entre deux points sur la transition
     center=transition.centre
@@ -161,8 +178,16 @@ def sequencing_conditions(aircraft, path):
     else: 
         print("rien fait")
         
-        
-        
+'''
+#Test TAE        
+path1=Path(Ortho(Point(-1,0),Point(0,1)),Transition(Point(0,0),1,1))   
+path1.boolorth=False
+path1.booltrans=True    
+act=Aircraft(sqrt(3)/2,0.5,0)
+print(tae(act, path1))     
+'''
+
+ 
 """
 test pour alongpathdistance        
 _TOWPT=Waypoint('wpt1',2,-3)

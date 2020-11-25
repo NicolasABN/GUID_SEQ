@@ -1,5 +1,5 @@
 """Geometry classes and utilities."""
-
+import numpy as np
 
 class Point(object):
     """Nm coordinates, with attributes x, y: int"""
@@ -112,10 +112,34 @@ class Trajectoire(object):
 
 class Waypoint(Point):
     """Définit une classe qui hérite de Point avec un id pour identifer le waypoint"""
-    def __init__(self,id,x,y):
-        super().__init__(x,y)
-        self.id=id
-
+    def __init__(self,lat,lon):
+        if type(lat)==str:
+            strlat=lat
+            strlon=lon
+            lat=float(strlat[1:])
+            lon=float(strlon[1:])
+            if strlat[0]!="N":
+                lat*=-1   
+            if strlon[0]!="E":
+                lon*=-1
+            
+        R = 6371007 # Rayon de la Terre
+        a = 6378137 # Demi grand axe de l'ellipsoide de reference WGS-84 (m)
+        x = a*lon
+        y = a*np.log(np.tan(np.pi/4+lat/2))
+        super().__init__(x/1852,y/1852)
+    
+    def convert(self):
+        """La latitude et la longitude sont à rentrer en RADIANS (mettre un moins quand coordonnées en S ou W)
+        Retourne les coordonnées (x,y) en mde la projection pseudo-Mercator. Pseudo-Mercator par rapport à Mercator
+        prend en compte le cote elliptique de la Terre (si jamais on veut juste Mercator, remplacer a par R dans les
+        formules) Merator/Pseudo-Mercator OK si base de donnée juste en Europe (pas trop de déformations)
+        /!\ formules pas ok quand latitude = 90° (au pole)"""
+        R = 6371007 # Rayon de la Terre
+        a = 6378137 # Demi grand axe de l'ellipsoide de reference WGS-84 (m)
+        x = a*self.lon
+        y = a*np.log(np.tan(np.pi/4+self.lat/2))
+        return x/1852, y/1852  # en NM
         
 class Aircraft(Point):
     

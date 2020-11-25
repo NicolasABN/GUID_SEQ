@@ -31,7 +31,8 @@ def sendNewLegList(LegList):  #format de leg liste : "ID=WPT1 SEQ=0 COURSE=110  
         C+=";"
     IvySendMsg("GS_AL Time="+str(_TIME)+" LegList="+C)
     
- 
+def sendAlongPathDistance(alongpath_distance):
+    IvySendMsg("GS_AL Time="+str(_TIME)+" AlongPathDistance="+str(alongpath_distance))
     
 def sendData(xtk, tae, dtwpt, bank_angle):
     IvySendMsg("GS_Data Time="+str(_TIME)+" XTK="+str(xtk)+" TAE="+str(tae)+" DTWPT="+str(dtwpt)+" BANK_ANGLE_REF="+str(bank_angle))

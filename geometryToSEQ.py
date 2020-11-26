@@ -140,7 +140,9 @@ class Waypoint(Point):
         x = a*self.lon
         y = a*np.log(np.tan(np.pi/4+self.lat/2))
         return x/1852, y/1852  # en NM
-        
+    
+print(Waypoint(1,1))    
+
 class Aircraft(Point):
     
     def __init__(self,x,y,hdg):

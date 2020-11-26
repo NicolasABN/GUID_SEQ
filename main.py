@@ -27,5 +27,8 @@ if __name__=='__main__':
     IvyBindMsg(recepTransitions,'^GT_TRAJ Liste_Transitions=(.*)') # Reception des transitions
     IvyBindMsg(recepPaths,'^GT_TRAJ Liste_Paths=(.*)') # Reception des paths
     IvyBindMsg(recepStateVector,'^StateVector x=(.*) y=(.*) z=(.*) Vp=(.*) fpa=(.*) psi=(.*) phi=(.*)') # Reception du vecteur d'état 
+    
+    
+    "FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT=1 LON=1 ;ID=WPT2 SEQ=1 COURSE=10  LAT=2 LON=-2"
     IvyMainLoop()
     

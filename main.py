@@ -18,8 +18,12 @@ if __name__=='__main__':
     
     #sendData(11,25,35,1)
     IvyBindMsg(recepTime,'^Time t=(.*)')
-    
+
     IvyBindMsg(recepLegList,'^FL_LegList Time=(.*) LegList=(.*)') # Reception de la liste des legs
+    
+    IvyBindMsg(recepGS,'^GT_PARAM_GS=(.*)')
+    IvyBindMsg(recepBankAngles,'^GT_TRAJ Liste_BankAngles=(.*)')
+
     
     IvyBindMsg(recepPoints,'^GT_TRAJ Liste_Points=(.*)') # Reception des points
     IvyBindMsg(recepSegments,'^GT_TRAJ Liste_Segments=(.*)') # Reception des segments
@@ -29,6 +33,5 @@ if __name__=='__main__':
     IvyBindMsg(recepStateVector,'^StateVector x=(.*) y=(.*) z=(.*) Vp=(.*) fpa=(.*) psi=(.*) phi=(.*)') # Reception du vecteur d'état 
     
     
-    "FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT=1 LON=1 ;ID=WPT2 SEQ=1 COURSE=10  LAT=2 LON=-2"
+    #"FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT=1 LON=1 ;ID=WPT2 SEQ=1 COURSE=10  LAT=2 LON=-2"
     IvyMainLoop()
-    

@@ -135,7 +135,6 @@ def path_sequencing(point, path1, path2):
     if path1.boolorth==True and path1.booltrans==False:
         
         proj = ortho_projection(point, ortho1, None)
-        print(proj)
         x1, y1 = proj.x, proj.y
         
         if not (((x1>=xs1 and x1<=xe1) or (x1<=xs1 and x1>=xe1)) and ((y1>=ys1 and y1<=ye1) or (y1<=ys1 and y1>=ye1))):
@@ -155,6 +154,7 @@ def path_sequencing(point, path1, path2):
             
             path1.boolorth=False
             path1.booltrans=False
+            g._LISTBANKANGLES=g._LISTBANKANGLES[1:]
             g._LISTPATHS=g._LISTPATHS[1:]
  
     
@@ -179,13 +179,33 @@ def sequencing_conditions(aircraft, path):
         if g._SIGN!=np.sign(aircraft.y-(a*aircraft.x+b)):
             
             g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
-            g._TOWPT=Waypoint(g._ACTIVELEG[3],g._ACTIVELEG[4]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
+            g._TOWPT=Waypoint(g._ACTIVELEG[2],g._ACTIVELEG[3]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
             g._LISTPATHS[0].boolactive=False
             
             return True
         
     return False
-          
+     
+
+def bank_angle(aircraft, path1, path2):
+    
+    if path1.boolorth==True and path1.booltrans==False:
+        proj=ortho_projection(aircraft, path1.ortho, None)
+
+        if proj.distance(path1.ortho.end)>g._GS*3/3600:
+            return 0
+        else:
+            return g._LISTBANKANGLES[0]
+    elif path1.boolorth==False and path1.booltrans==True:
+        proj=ortho_projection(aircraft, None, path1.transition)
+        if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*3/3600:
+            return g._LISTBANKANGLES[0]
+        else:
+            return 0
+
+
+    
+    
 '''
 #Test TAE        
 path1=Path(Ortho(Point(-1,0),Point(0,1)),Transition(Point(0,0),1,1))   

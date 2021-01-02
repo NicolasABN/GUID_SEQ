@@ -6,6 +6,7 @@ Created on Tue Nov 24 14:53:26 2020
 """
 from geometryToSEQ import *
 
+_GS=0
 _TIME=0
 _SIGN=0
 _AIRCRAFT=Aircraft(0,0,0)
@@ -17,4 +18,5 @@ _LISTPOINTS=[]
 _LISTSEGMENTS=[]
 _LISTTRANSITIONS=[]
 _LISTPATHS=[]
-_LISTORTHOS=[]    
+_LISTORTHOS=[] 
+_LISTBANKANGLES=[]   

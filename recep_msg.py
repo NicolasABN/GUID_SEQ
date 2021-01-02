@@ -21,57 +21,51 @@ def recepTime(*arg):
     print(round(g._TIME,1))
     
 def recepLegList(*arg):
-    L=arg[2].strip().strip(";").split(";")
+    L=L=arg[2].strip().strip("(").strip(")").strip(";").split(";")
     LegList=[l.split() for l in L]                          # On découpe la liste par bloc de leg ID=WPT1 SEQ=0 COURSE=110  LAT= LON=    
     print(LegList)
     print(len(LegList))
+    g._LEGLIST=[]
     for i in range(len(LegList)):
             
         g._LEGLIST.append([LegList[i][j].split("=")[1] for j in range(5)])
-    
-    g._TOWPT=Waypoint(g._LEGLIST[0][3], g._LEGLIST[0][4])
+        
+        
+    g._TOWPT=Waypoint(g._LEGLIST[0][2], g._LEGLIST[0][3])
     g._ACTIVELEG=g._LEGLIST[0]
-    print(g._TOWPT)
-    print("time ="+arg[1])
-    print(g._LEGLIST)
     
-#FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT= LON=20;ID=WPT2 SEQ=1 COURSE=10  LAT=101 LON=201
+#FL_LegList Time=1 LegList=ID=WPT2 SEQ=1 LAT=S10101010 LON=W020102010 COURSE=10;ID=WPT1 SEQ=0 LAT=N60201234 LON=E060301234  COURSE=110
+
+def recepGS(*args):
+    L=args[1].strip()
+    g._GS = eval(L)
 
 
-def recepOrigin(*args):   # A FAIRE
-    ori=arg[1].strip()
-    g._ORIGIN=eval(ori)
+def recepBankAngles(*args):
+    L=args[1].strip()
+    g._LISTBANKANGLES=eval(L)
     
+
 def recepPoints(*arg):    
     L=arg[1].strip()
-    listpoints=eval(L)
-    for i in len(listpoints):
-        listpoints[i]+=g._ORIGIN
-    g._LISTPOINTS=listpoints
-    print(g._LISTPOINTS)
+    g._LISTPOINTS=eval(L)
+
     
 def recepSegments(*arg):
     Liste_Points=g._LISTPOINTS
     L=arg[1].strip()
     g._LISTSEGMENTS=eval(L)
-    print(g._LISTSEGMENTS)
+
     
 def recepOrthos(*arg):
     L=arg[1].strip()
-    listorthos=eval(L)
-    for i in range(len(listorthos)):
-        listorthos[i].start+=g._ORIGIN
-        listorthos[i].end+=g._ORIGIN
-    g._LISTORTHOS=listorthos
+    g._LISTORTHOS=eval(L)
     
     
 def recepTransitions(*arg):
     L=arg[1].strip()
-    listtransitions=eval(L)
-    for i in range(len(listtransitions)):
-        listtransitions[i].centre+=g._ORIGIN
-    g._LISTTRANSITIONS=listttransitions
-    print(g._LISTTRANSITIONS)
+    g._LISTTRANSITIONS=eval(L)
+
         
 def recepPaths(*arg):
     Liste_Orthos, Liste_Transitions = g._LISTORTHOS, g.LISTTRANSITIONS
@@ -91,13 +85,13 @@ def recepStateVector(*arg):
             s.sendActiveLeg(g._ACTIVELEG[1])
             s.sendNewLegList(g._LEGLIST)
             
-        xtk, tae, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0]), g.AIRCRAFT.distance(g._TOWPT), 0
+        xtk, tae, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0]), g.AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
         apdist=alongpath_distance(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1])
         sendAlongPathDistance(apdist)
-        sendData(xtk, tae, dtwpt, bank_angle)
+        sendData(xtk, tae, dtwpt, bank_angle_ref)
         
     
-    print(g._AIRCRAFT)
+
 
 #StateVector x=15 y=12 z=0 Vp=2 fpa=4 psi=(.*) phi=(.*)
 

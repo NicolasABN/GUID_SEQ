@@ -110,39 +110,32 @@ class Trajectoire(object):
     def __repr__(self):
         return str(self.path_list)
 
-class Waypoint(Point):
+class Waypoint(Point):    # Prend en paramètre lat et lon en degrés et les attributs sont en NM
     """Définit une classe qui hérite de Point avec un id pour identifer le waypoint"""
     def __init__(self,lat,lon):
-        if type(lat)==str:
-            strlat=lat
-            strlon=lon
-            lat=float(strlat[1:])
-            lon=float(strlon[1:])
+        strlat, strlon = lat, lon
+        if type(strlat)==str:
+            lat=float(strlat[1:3])
+            lat+=float(strlat[3:5])/60
+            lat+=float(strlat[5:7])/3600
+            lat+=float(strlat[7:9])/36000
+            lon=float(strlon[1:4])
+            lon+=float(strlon[4:6])/60
+            lon+=float(strlon[6:8])/3600
+            lon+=float(strlon[8:10])/36000
             if strlat[0]!="N":
                 lat*=-1   
             if strlon[0]!="E":
                 lon*=-1
-            
+        
+        lon=lon*np.pi/180
+        lat=lat*np.pi/180
         R = 6371007 # Rayon de la Terre
         a = 6378137 # Demi grand axe de l'ellipsoide de reference WGS-84 (m)
         x = a*lon
         y = a*np.log(np.tan(np.pi/4+lat/2))
         super().__init__(x/1852,y/1852)
     
-    def convert(self):
-        """La latitude et la longitude sont à rentrer en RADIANS (mettre un moins quand coordonnées en S ou W)
-        Retourne les coordonnées (x,y) en mde la projection pseudo-Mercator. Pseudo-Mercator par rapport à Mercator
-        prend en compte le cote elliptique de la Terre (si jamais on veut juste Mercator, remplacer a par R dans les
-        formules) Merator/Pseudo-Mercator OK si base de donnée juste en Europe (pas trop de déformations)
-        /!\ formules pas ok quand latitude = 90° (au pole)"""
-        R = 6371007 # Rayon de la Terre
-        a = 6378137 # Demi grand axe de l'ellipsoide de reference WGS-84 (m)
-        x = a*self.lon
-        y = a*np.log(np.tan(np.pi/4+self.lat/2))
-        return x/1852, y/1852  # en NM
-    
-print(Waypoint(1,1))    
-
 class Aircraft(Point):
     
     def __init__(self,x,y,hdg):

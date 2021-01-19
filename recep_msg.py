@@ -18,23 +18,25 @@ def on_die(agent, _id):
 def recepTime(*arg):
     
     g._TIME=float(arg[1])
-    print(round(g._TIME,1))
+    #print(round(g._TIME,1))
     
 def recepLegList(*arg):
-    L=L=arg[2].strip().strip("(").strip(")").strip(";").split(";")
+    L=arg[2].strip().strip("(").strip(")").strip(";").split(";")
     LegList=[l.split() for l in L]                          # On découpe la liste par bloc de leg ID=WPT1 SEQ=0 COURSE=110  LAT= LON=    
-    print(LegList)
-    print(len(LegList))
+
     g._LEGLIST=[]
-    for i in range(len(LegList)):
+    for i in range(g._NUMSEQ,len(LegList)):
             
-        g._LEGLIST.append([LegList[i][j].split("=")[1] for j in range(5)])
+        g._LEGLIST.append([LegList[i][j].split("=")[1].strip() for j in range(9)])
         
-        
-    g._TOWPT=Waypoint(g._LEGLIST[0][2], g._LEGLIST[0][3])
+
+    g._TOWPT=Waypoint(g._LEGLIST[0][4], g._LEGLIST[0][5])
     g._ACTIVELEG=g._LEGLIST[0]
+    print(g._ACTIVELEG)
+    print(g._LEGLIST)
+    print(g._TOWPT)
     
-#FL_LegList Time=1 LegList=ID=WPT2 SEQ=1 LAT=S10101010 LON=W020102010 COURSE=10;ID=WPT1 SEQ=0 LAT=N60201234 LON=E060301234  COURSE=110
+#FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT=N100000000 LON=E0100000000;ID=WPT2 SEQ=1 COURSE=10  LAT=N600000000 LON=E0700000000
 
 def recepGS(*args):
     L=args[1].strip()
@@ -44,11 +46,13 @@ def recepGS(*args):
 def recepBankAngles(*args):
     L=args[1].strip()
     g._LISTBANKANGLES=eval(L)
+    print('bank_angles_reçus')
     
 
 def recepPoints(*arg):    
     L=arg[1].strip()
     g._LISTPOINTS=eval(L)
+    print(g._LISTPOINTS)
 
     
 def recepSegments(*arg):
@@ -68,9 +72,10 @@ def recepTransitions(*arg):
 
         
 def recepPaths(*arg):
-    Liste_Orthos, Liste_Transitions = g._LISTORTHOS, g.LISTTRANSITIONS
+    Liste_Orthos, Liste_Transitions = g._LISTORTHOS, g._LISTTRANSITIONS
     L=arg[1].strip()
     g._LISTPATHS=eval(L)
+    print("Paths reçus")
     
 #GT_TRAJ TRAJ_Paths=[Path(TRAJ_Transitions[0], TRAJ_Segments[0]), Path(TRAJ_Transitions[1], TRAJ_Segments[1])]   
 
@@ -79,21 +84,20 @@ def recepStateVector(*arg):
     y=float(arg[2])/1852
     hdg=float(arg[6])               #EN RADIANS
     g._AIRCRAFT=Aircraft(x,y,hdg)
-    if g._LISTPATHS!=[] and g._TOWPT.id!='':
+    if g._LISTPATHS!=[]:
         path_sequencing(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1]) # Au cas où il ne reste plus qu'un seul path dans la trajectoire
         if sequencing_conditions(g._AIRCRAFT,g._LISTPATHS[0]):
-            s.sendActiveLeg(g._ACTIVELEG[1])
+            s.sendActiveLeg(g._ACTIVELEG[0])
             s.sendNewLegList(g._LEGLIST)
             
-        xtk, tae, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0]), g.AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
+        xtk_, tae_, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0]), g._AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
         apdist=alongpath_distance(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1])
-        sendAlongPathDistance(apdist)
-        sendData(xtk, tae, dtwpt, bank_angle_ref)
+        sendData(xtk_, tae_, dtwpt, bank_angle_ref, apdist)
         
     
 
 
-#StateVector x=15 y=12 z=0 Vp=2 fpa=4 psi=(.*) phi=(.*)
+#StateVector x=15 y=12 z=0 Vp=2 fpa=4 psi=5 phi=10
 
 
 # fonction eval => run la chaine de caractère

@@ -98,13 +98,16 @@ class Transition(object):
     def __init__(self, type, list_items):
         self.type = type
         self.list_items = list_items
+        self.boolarc1=True
+        self.boolseg=False
+        self.boolarc2=False
 
 class Path(object):
-    def __init__(self, ortho, transition):
+    def __init__(self, ortho, transition, bool1=True, bool2=False):
         self.ortho = ortho
         self.transition = transition
-        self.boolorth = True  
-        self.booltrans = False
+        self.boolorth = bool1  
+        self.booltrans = bool2
         self.boolactive = True
         
     def __repr__(self):

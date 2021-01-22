@@ -28,33 +28,66 @@ def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l
 
 
 def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading vers la trajectoire; heading entre nordMag et cap
+
     
+    xs, ys, xe, ye = path.ortho.start.x, path.ortho.start.y, path.ortho.end.x, path.ortho.end.y
+    v1=[xe-xs, ye-ys, 0]
+    v2=[0,1,0]
+    s=np.sign(np.cross(v1,v2)[2])   
     if path.boolorth==True and path.booltrans==False:
-        
-        angle=atan((path.ortho.end.y-path.ortho.start.y)/(path.ortho.end.x-path.ortho.start.x))-pi/2
-        
-        return angle+aircraft.hdg
+        if s==0:
+            if ys<ye:
+                angle=0
+            else:
+                angle=-pi
+        else:
+            angle=-atan((path.ortho.end.y-path.ortho.start.y)/(path.ortho.end.x-path.ortho.start.x))+s*pi/2
+        trackangleerror=aircraft.hdg-angle
+        if trackangleerror>pi:
+            trackangleerror+=-2*pi
+        elif trackangleerror<-pi:
+            trackangleerror+=2*pi
+        return trackangleerror
   
-    if path.boolorth==False and path.booltrans==True:
-        
+    elif path.boolorth==False and path.booltrans==True:
         xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
-        a=(yc-aircraft.y)/(xc-aircraft.x)    # Attention au cas ou droite verticale ou horizontale
-        
-        if a==0:
-            angle=0
-        else:    
-            angle= atan(-1/a)-pi/2
+        if path.transition.type=="fly_by":
             
-        return angle+aircraft.hdg
+            if xc==aircraft.x:
+                angle=s*pi/2
+            else :
+                a=(yc-aircraft.y)/(xc-aircraft.x)    # Attention au cas ou droite verticale ou horizontale
+                
+                if a==0:
+                    angle=0
+                else:    
+                    angle=-atan(-1/a)+s*pi/2
+            trackangleerror=aircraft.hdg-angle
+            if trackangleerror>pi:
+                trackangleerror+=-2*pi
+            elif trackangleerror<-pi:
+                trackangleerror+=2*pi
+            return trackangleerror
         
-
+        elif path.transition.type=="fly_over":
+            if path.transition.boolarc1==True:
+                return tae(aircraft, Path(path.ortho,Transition("fly_by",[path.transition.list_items[0]], False, True)))
+            elif path.transition.boolseg==True:
+                return tae(aircraft, Path(path.transition.list_items[1], Transition("fly_by",[path.transition.list_items[2]]), True, False))
+            elif path.transition.boolarc2==True:
+                return tae(aircraft, Path(path.transition.list_items[1], Transition("fly_by",[path.transition.list_items[2]]), False, True))
+            
+act=Aircraft(0,0,-pi/4)
+path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("fly_by",[Arc(Point(70,60),10,10)]))
+print(tae(act,path))
     
-    
 
-def transition_distance(p1,p2,transition): # Calcul la distance entre deux points sur la transition
 
-    center=transition.list_items[0].centre
-    radius=transition.list_items[0].turn_radius
+
+def arc_distance(p1,p2,arc): # Calcul la distance entre deux points sur la transition
+
+    center=arc.centre
+    radius=arc.turn_radius
     c=p1.distance(p2)
     alpha=acos((-c**2+2*(radius**2))/(2*(radius**2)))
     
@@ -64,6 +97,25 @@ def ortho_distance(p1,ortho): # Calcul la distance entre un point sur le segment
 
     return p1.distance(ortho.end)
 
+def transition_distance(p1, p2, transition):
+    
+    if transition.type=="fly_by":
+        return arc_distance(p1,p2,transition.list_items[0])
+    
+    elif transition.type=="fly_over":
+        seg = transition.list_items[1]
+        
+        if transition.boolarc1==True:
+            return arc_distance(p1, seg.start, transition.list_items[0])+ortho_distance(seg.start,seg)+arc_distance(seg.end, p2, transition.list_items[2])
+        
+        elif transition.boolseg==True:  
+            return ortho_distance(p1,seg)+arc_distance(seg.end, p2, transition.list_items[2])
+        
+        elif transition.boolarc2==True:
+            return arc_distance(p1, p2, transition.list_items[2])
+        
+        
+        
 def alongpath_distance(aircraft, path1, path2):
     
     if path1.boolorth==True and path1.booltrans==False:
@@ -109,7 +161,7 @@ def ortho_projection(point, ortho, transition=None): #Renvoie la projection du p
             
         return (Point(x,y))
     
-    else:       # Problème si l'avion se trouve au centre de la transition (infinité de projections orthogonales sur le cercle !!!!)
+    elif transition.type=="fly_by":       # Problème si l'avion se trouve au centre de la transition (infinité de projections orthogonales sur le cercle !!!!)
         
         if transition.list_items[0].centre.x == point.x:
             x=transition.list_items[0].centre.x
@@ -132,13 +184,22 @@ def ortho_projection(point, ortho, transition=None): #Renvoie la projection du p
                  x=(((1/(2*(yc-ya)))*(distcp**2+2*distcp*radius-ya**2+yc**2-xa**2+xc**2))-b)/(a+((xc-xa)/(yc-ya)))
                  y=a*x+b
         return(Point(x,y))
-
-
+    
+    elif transition.type=="fly_over":
+        
+        if transition.boolarc1==True:
+            return ortho_projection(point, ortho, Transition("fly_by",[transition.list_items[0]]))
+        elif transition.boolseg==True:
+            return ortho_projection(point ,transition.list_items[1], None)
+        elif transition.boolarc2==True:
+            return ortho_projection(point, transition.list_items[1], Transition("fly_by",[transition.list_items[2]]))
+    
+    
 def path_sequencing(point, path1, path2):
-    ortho1, trans1, ortho2 = path1.ortho, path1.transition.list_items[0], path2.ortho
+    ortho1, trans1, ortho2 = path1.ortho, path1.transition, path2.ortho
     xs1, ys1, xe1, ye1 = ortho1.start.x, ortho1.start.y, ortho1.end.x, ortho1.end.y
     xs2, ys2, xe2, ye2 = ortho2.start.x, ortho2.start.y, ortho2.end.x, ortho2.end.y 
-    xc, yc = trans1.centre.x, trans1.centre.y
+    xc, yc = trans1.list_items[0].centre.x, trans1.list_items[0].centre.y
     xwpt, ywpt = g._TOWPT.x, g._TOWPT.y
     
     if path1.boolorth==True and path1.booltrans==False:
@@ -146,25 +207,55 @@ def path_sequencing(point, path1, path2):
         proj = ortho_projection(point, ortho1, None)
         x1, y1 = proj.x, proj.y
         if not (((x1>=xs1 and x1<=xe1) or (x1<=xs1 and x1>=xe1)) and ((y1>=ys1 and y1<=ye1) or (y1<=ys1 and y1>=ye1))):
-            path1.boolorth=False
-            path1.booltrans=True
-            if xc==xwpt:
-                g._SIGN=np.sign(point.x-xc)
-            else:
-                a=(yc-ywpt)/(xc-xwpt)    # Attention au cas ou droite verticale ou horizontale
-                b=yc-a*xc
-                g._SIGN=np.sign(point.y-(a*point.x+b))
+            if proj.distance(ortho.end)<1:
+                path1.boolorth=False
+                path1.booltrans=True
+                if trans1.type=="fly_by":
+                    if xc==xwpt:
+                        g._SIGN=np.sign(point.x-xc)
+                    else:
+                        a=(yc-ywpt)/(xc-xwpt)    # Attention au cas ou droite verticale ou horizontale
+                        b=yc-a*xc
+                        g._SIGN=np.sign(point.y-(a*point.x+b))
+                    
             
     elif path1.boolorth==False and path1.booltrans==True:
-        
-        proj = ortho_projection(point, ortho2, None)
-        x2, y2 = proj.x, proj.y
-        
-        if (((x2>=xs2 and x2<=xe2) or (x2<=xs2 and x2>=xe2)) and ((y2>=ys2 and y2<=ye2) or (y2<=ys2 and y2>=ye2))):
+        if trans1.type=="fly_by":
+            proj = ortho_projection(point, ortho2, None)
+            x2, y2 = proj.x, proj.y
             
-            path1.boolorth=False
-            path1.booltrans=False
-            g._LISTPATHS=g._LISTPATHS[1:]
+            if (((x2>=xs2 and x2<=xe2) or (x2<=xs2 and x2>=xe2)) and ((y2>=ys2 and y2<=ye2) or (y2<=ys2 and y2>=ye2))):
+                
+                path1.boolorth=False
+                path1.booltrans=False
+                g._LISTPATHS=g._LISTPATHS[1:]
+        elif trans1.type=="fly_over":
+            if trans1.boolarc1==True:
+                proj = ortho_projection(point, trans1.list_items[1], None)
+                x2, y2 = proj.x, proj.y
+                xs, ys = trans1.list_items[1].start.x, trans1.list_items[1].start.y
+                xe, ye = trans1.list_items[1].end.x, trans1.list_items[1].end.y
+                
+                if (((x2>=xs and x2<=xe) or (x2<=xs and x2>=xe)) and ((y2>=ys and y2<=ye) or (y2<=ys and y2>=ye))):
+                    path1.transition.boolarc1, path1.transition.boolseg = False, True
+                    
+            elif trans1.boolseg==True:
+                proj = ortho_projection(point, trans1.list_items[1], None)
+                x2, y2 = proj.x, proj.y
+                xs, ys = trans1.list_items[1].start.x, trans1.list_items[1].start.y
+                xe, ye = trans1.list_items[1].end.x, trans1.list_items[1].end.y
+                
+                if not (((x2>=xs and x2<=xe) or (x2<=xs and x2>=xe)) and ((y2>=ys and y2<=ye) or (y2<=ys and y2>=ye))):
+                    path1.transition.boolseg, path1.transition.boolarc2 = False, True
+                    
+            elif trans1.boolarc2==True:
+                proj = ortho_projection(point, ortho2, None)
+                x2, y2 = proj.x, proj.y
+        
+                if (((x2>=xs2 and x2<=xe2) or (x2<=xs2 and x2>=xe2)) and ((y2>=ys2 and y2<=ye2) or (y2<=ys2 and y2>=ye2))):
+                    path1.boolorth=False
+                    path1.booltrans=False
+                    g._LISTPATHS=g._LISTPATHS[1:]
  
 
 def active_leg(legs_list):  # renvoie la leg active et la supprime
@@ -179,24 +270,30 @@ def active_leg(legs_list):  # renvoie la leg active et la supprime
 def sequencing_conditions(aircraft, path):
 
     if path.boolorth==False and path.booltrans==True:
-        
-        xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
-        xwpt, ywpt = g._TOWPT.x, g._TOWPT.y
-        if xc==xwpt:
-            sgn=np.sign(aircraft.x-xc)
-        else:
-            a=(yc-ywpt)/(xc-xwpt)    # Attention au cas ou droite verticale ou horizontale
-            b=yc-a*xc
-            sgn=np.sign(aircraft.y-(a*aircraft.x+b))
-        
-        if g._SIGN!=sgn:
-            
+        if path.transition.type=="fly_over":
             g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
             g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
             print("ça séquence fort")
             g._LISTPATHS[0].boolactive=False
-            
             return True
+        else :
+            xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
+            xwpt, ywpt = g._TOWPT.x, g._TOWPT.y
+            if xc==xwpt:
+                sgn=np.sign(aircraft.x-xc)
+            else:
+                a=(yc-ywpt)/(xc-xwpt)    # Attention au cas ou droite verticale ou horizontale
+                b=yc-a*xc
+                sgn=np.sign(aircraft.y-(a*aircraft.x+b))
+            
+            if g._SIGN!=sgn:
+                
+                g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
+                g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
+                print("ça séquence fort")
+                g._LISTPATHS[0].boolactive=False
+                
+                return True
         
     return False
      
@@ -209,14 +306,36 @@ def bank_angle(aircraft, path1, path2):
         if proj.distance(path1.ortho.end)>g._GS*3/3600:
             return 0
         else:
-            return g._LISTBANKANGLES[0]
+            if path1.transition.type=="fly_by":
+                return g._LISTBANKANGLES[0]
+            return g._LISTBANKANGLES[0][0]
     elif path1.boolorth==False and path1.booltrans==True:
         proj=ortho_projection(aircraft, path1.ortho, path1.transition)
-        if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*3/3600:
-            return g._LISTBANKANGLES[0]
+        
+        if path1.transition.type=="fly_by":
+            
+            if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*3/3600:
+                return g._LISTBANKANGLES[0]
+            else:
+                return 0
         else:
-            return 0
-
+            
+            if path1.transition.boolarc1==True:
+                if transition_distance(proj, path1.transition.list_items[1].start, path1.transition)>g._GS*3/3600:
+                    return g._LISTBANKANGLES[0][0]
+                else:
+                    return 0
+            elif path1.transition.boolseg==True:
+                 if ortho_distance(proj,path1.transition.list_items[1])>g._GS*3/3600:
+                     return 0
+                 else:
+                     return g._LISTBANKANGLES[0][1]
+            elif path1.transition.boolarc2==True:
+                if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*3/3600:
+                    return g._LISTBANKANGLES[0][1]
+                else:
+                    return 0
+            
     
     
 '''

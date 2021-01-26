@@ -8,9 +8,13 @@ import send_msg as s
 
 def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l'avion est à gauche
     
+    print(aircraft)
     if path.boolorth==True and path.booltrans==False:
         
+        print(path.ortho.start)
+        print(path.ortho.end)
         proj=ortho_projection(aircraft, path.ortho, None)
+        print(proj)
         se=[path.ortho.end.x-path.ortho.start.x,path.ortho.end.y-path.ortho.start.y,0]
         ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]
         s=np.sign(np.cross(se,ap)[2])
@@ -20,6 +24,7 @@ def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l
     elif path.boolorth==False and path.booltrans==True:
         
         proj=ortho_projection(aircraft, path.ortho, path.transition)
+        print(proj)
         se=[proj.x-path.ortho.end.x,proj.y-path.ortho.end.y,0]
         ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]
         s=np.sign(np.cross(se,ap)[2])
@@ -273,7 +278,7 @@ def sequencing_conditions(aircraft, path):
         if path.transition.type=="Flyover":
             g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
             g._LISTPOINTS=g._LISTPOINTS[1:]
-            g._TOWPT=Point(g._LISTPOINTS[1].x,g._LISTPOINTS[1].y)
+            g._TOWPT=g._LISTPOINTS[1]
             #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
             print("ça séquence fort")
             g._LISTPATHS[0].boolactive=False
@@ -292,7 +297,7 @@ def sequencing_conditions(aircraft, path):
                 
                 g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
                 g._LISTPOINTS=g._LISTPOINTS[1:]
-                g._TOWPT=Point(g._LISTPOINTS[1].x, g._LISTPOINTS[1].y)
+                g._TOWPT=g._LISTPOINTS[1]
                 #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
                 print("ça séquence fort")
                 g._LISTPATHS[0].boolactive=False

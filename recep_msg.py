@@ -7,7 +7,7 @@ from send_msg import *
 from geometryToSEQ import *
 from functions import *
 import global_variables as g
-
+import matplotlib.pyplot as plt
 def on_cx(agent, connected):
     pass
 
@@ -34,7 +34,7 @@ def recepLegList(*arg):
     g._ACTIVELEG=g._LEGLIST[0]
     print(g._ACTIVELEG)
     print(g._LEGLIST)
-    print(g._TOWPT)
+    #print(g._TOWPT)
     
 #FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT=N100000000 LON=E0100000000;ID=WPT2 SEQ=1 COURSE=10  LAT=N600000000 LON=E0700000000
 
@@ -52,7 +52,8 @@ def recepBankAngles(*args):
 def recepPoints(*arg):    
     L=arg[1].strip()
     g._LISTPOINTS=eval(L)
-    g._TOWPT=Point(g._LISTPOINTS[1].x,g._LISTPOINTS[1].y)
+    g._TOWPT=g._LISTPOINTS[1]
+    print(g._TOWPT)
     print(g._LISTPOINTS)
 
     
@@ -83,6 +84,13 @@ def recepPaths(*arg):
 def recepStateVector(*arg):
     x=float(arg[1])/1852            #Metres convertis en NM
     y=float(arg[2])/1852
+    X=[]
+    Y=[]
+    X.append(x)
+    Y.append(y)
+    plt.close()
+    plt.plot(X,Y)
+    plt.show()
     hdg=float(arg[6])               #EN RADIANS
     g._AIRCRAFT=Aircraft(x,y,hdg)
     if g._LISTPATHS!=[]:
@@ -96,7 +104,6 @@ def recepStateVector(*arg):
         sendData(xtk_, tae_, dtwpt, bank_angle_ref, apdist)
         
     
-
 
 #StateVector x=15 y=12 z=0 Vp=2 fpa=4 psi=5 phi=10
 

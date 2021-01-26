@@ -76,11 +76,11 @@ def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading 
                 return tae(aircraft, Path(path.transition.list_items[1], Transition("fly_by",[path.transition.list_items[2]]), True, False))
             elif path.transition.boolarc2==True:
                 return tae(aircraft, Path(path.transition.list_items[1], Transition("fly_by",[path.transition.list_items[2]]), False, True))
-            
+'''            
 act=Aircraft(0,0,-pi/4)
 path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("fly_by",[Arc(Point(70,60),10,10)]))
 print(tae(act,path))
-    
+  '''  
 
 
 
@@ -207,7 +207,7 @@ def path_sequencing(point, path1, path2):
         proj = ortho_projection(point, ortho1, None)
         x1, y1 = proj.x, proj.y
         if not (((x1>=xs1 and x1<=xe1) or (x1<=xs1 and x1>=xe1)) and ((y1>=ys1 and y1<=ye1) or (y1<=ys1 and y1>=ye1))):
-            if proj.distance(ortho1.end)<1:
+            if proj.distance(ortho.end)<1:
                 path1.boolorth=False
                 path1.booltrans=True
                 if trans1.type=="fly_by":
@@ -272,7 +272,9 @@ def sequencing_conditions(aircraft, path):
     if path.boolorth==False and path.booltrans==True:
         if path.transition.type=="fly_over":
             g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
-            g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
+            g._LISTPOINTS=g._LISTPOINTS[1:]
+            g._TOWPT=Waypoint(g._LISTPOINTS[1].x,g._LISTPOINTS[1])
+            #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
             print("ça séquence fort")
             g._LISTPATHS[0].boolactive=False
             return True
@@ -289,7 +291,9 @@ def sequencing_conditions(aircraft, path):
             if g._SIGN!=sgn:
                 
                 g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
-                g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
+                g._LISTPOINTS=g._LISTPOINTS[1:]
+                g._TOWPT=Waypoint(g._LISTPOINTS[1].x, g._LISTPOINTS[1].y)
+                #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
                 print("ça séquence fort")
                 g._LISTPATHS[0].boolactive=False
                 

@@ -52,6 +52,7 @@ def recepBankAngles(*args):
 def recepPoints(*arg):    
     L=arg[1].strip()
     g._LISTPOINTS=eval(L)
+    g._TOWPT=Waypoint(g._LISTPOINTS[1].x,g._LISTPOINTS[1].y)
     print(g._LISTPOINTS)
 
     

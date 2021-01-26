@@ -207,7 +207,7 @@ def path_sequencing(point, path1, path2):
         proj = ortho_projection(point, ortho1, None)
         x1, y1 = proj.x, proj.y
         if not (((x1>=xs1 and x1<=xe1) or (x1<=xs1 and x1>=xe1)) and ((y1>=ys1 and y1<=ye1) or (y1<=ys1 and y1>=ye1))):
-            if proj.distance(ortho.end)<1:
+            if proj.distance(ortho1.end)<1:
                 path1.boolorth=False
                 path1.booltrans=True
                 if trans1.type=="fly_by":

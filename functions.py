@@ -51,7 +51,7 @@ def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading 
   
     elif path.boolorth==False and path.booltrans==True:
         xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
-        if path.transition.type=="fly_by":
+        if path.transition.type=="Flyby":
             
             if xc==aircraft.x:
                 angle=s*pi/2
@@ -69,16 +69,16 @@ def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading 
                 trackangleerror+=2*pi
             return trackangleerror
         
-        elif path.transition.type=="fly_over":
+        elif path.transition.type=="Flyover":
             if path.transition.boolarc1==True:
-                return tae(aircraft, Path(path.ortho,Transition("fly_by",[path.transition.list_items[0]], False, True)))
+                return tae(aircraft, Path(path.ortho,Transition("Flyby",[path.transition.list_items[0]], False, True)))
             elif path.transition.boolseg==True:
-                return tae(aircraft, Path(path.transition.list_items[1], Transition("fly_by",[path.transition.list_items[2]]), True, False))
+                return tae(aircraft, Path(path.transition.list_items[1], Transition("Flyby",[path.transition.list_items[2]]), True, False))
             elif path.transition.boolarc2==True:
-                return tae(aircraft, Path(path.transition.list_items[1], Transition("fly_by",[path.transition.list_items[2]]), False, True))
+                return tae(aircraft, Path(path.transition.list_items[1], Transition("Flyby",[path.transition.list_items[2]]), False, True))
 '''            
 act=Aircraft(0,0,-pi/4)
-path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("fly_by",[Arc(Point(70,60),10,10)]))
+path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("Flyby",[Arc(Point(70,60),10,10)]))
 print(tae(act,path))
   '''  
 
@@ -99,10 +99,10 @@ def ortho_distance(p1,ortho): # Calcul la distance entre un point sur le segment
 
 def transition_distance(p1, p2, transition):
     
-    if transition.type=="fly_by":
+    if transition.type=="Flyby":
         return arc_distance(p1,p2,transition.list_items[0])
     
-    elif transition.type=="fly_over":
+    elif transition.type=="Flyover":
         seg = transition.list_items[1]
         
         if transition.boolarc1==True:

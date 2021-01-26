@@ -30,7 +30,7 @@ def recepLegList(*arg):
         g._LEGLIST.append([LegList[i][j].split("=")[1].strip() for j in range(9)])
         
 
-    g._TOWPT=Waypoint(g._LEGLIST[0][4], g._LEGLIST[0][5])
+    #g._TOWPT=Waypoint(g._LEGLIST[0][4], g._LEGLIST[0][5])
     g._ACTIVELEG=g._LEGLIST[0]
     print(g._ACTIVELEG)
     print(g._LEGLIST)

@@ -11,7 +11,7 @@ import time
 #192.168.43.255:2010
 if __name__=='__main__':
     app_name="GUID_SEQ_APP"
-    ivy_bus="192.168.43.255:2010"
+    ivy_bus=""
     bus=IvyInit(app_name,"GUID_SEQ is Ready",0,on_cx,on_die)
     IvyStart(ivy_bus)
     time.sleep(1)

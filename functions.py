@@ -198,8 +198,10 @@ def ortho_projection(point, ortho, transition=None): #Renvoie la projection du p
             return ortho_projection(point ,transition.list_items[1], None)
         elif transition.boolarc2==True:
             return ortho_projection(point, transition.list_items[1], Transition("Flyby",[transition.list_items[2]]))
-    
-    
+
+print(ortho_projection(Point(0,1),Ortho(Point(0,0),Point(1,1)),None))
+
+
 def path_sequencing(point, path1, path2):
     ortho1, trans1, ortho2 = path1.ortho, path1.transition, path2.ortho
     xs1, ys1, xe1, ye1 = ortho1.start.x, ortho1.start.y, ortho1.end.x, ortho1.end.y
@@ -394,6 +396,38 @@ path_sequencing(point2, path1, path2)
 print(path1.boolorth)
 print(path1.booltrans)
 """
+
+
+act=Aircraft(0,1,0)
+ort=Ortho(Point(0,0),Point(1,1))
+print(ortho_projection(act,ort,None))
+
+act=Aircraft(1.5,1.5,0)
+trans=Transition("Flyby",[Arc(Point(2,1),1,1)])
+print(ortho_projection(act,ort,trans))
+
+act=Aircraft(1.5,1.5,0)
+trans=Transition("Flyover",[Arc(Point(-1,0),1,1),Segment(Point(0,0),Point(1,1)),Arc(Point(2,1),1,1)])
+print(ortho_projection(act,ort,trans))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

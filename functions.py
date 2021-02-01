@@ -49,10 +49,13 @@ def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading 
         else:
             angle=-atan((path.ortho.end.y-path.ortho.start.y)/(path.ortho.end.x-path.ortho.start.x))+s*pi/2
         trackangleerror=aircraft.hdg-angle
+        print(trackangleerror)
         if trackangleerror>pi:
             trackangleerror+=-2*pi
+            print("c est superieur a pi")
         elif trackangleerror<-pi:
             trackangleerror+=2*pi
+            print("c est inferieur a -pi")
         return trackangleerror
   
     elif path.boolorth==False and path.booltrans==True:

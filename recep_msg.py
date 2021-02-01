@@ -83,7 +83,7 @@ def recepPaths(*arg):
 
 def recepStateVector(*arg):
     x=float(arg[2])/1852            #Metres convertis en NM
-    y=float(arg[1])/1852
+    y=float(arg[1])/1852            #Echange des paramètres X et Y pour être coherents avec la convention prise dans le model avion
     X=[]
     Y=[]
     X.append(x)

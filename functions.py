@@ -282,11 +282,12 @@ def sequencing_conditions(aircraft, path):
             g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
             g._LISTPOINTS=g._LISTPOINTS[1:]
             g._TOWPT=g._LISTPOINTS[1]
+            g._LISTBANKANGLES[1:]
             #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
             print("ça séquence fort")
             g._LISTPATHS[0].boolactive=False
             return True
-        else :
+        elif path.transition.type=="Flyby" :
             xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
             xwpt, ywpt = g._TOWPT.x, g._TOWPT.y
             if xc==xwpt:

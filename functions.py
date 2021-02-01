@@ -237,6 +237,7 @@ def path_sequencing(point, path1, path2):
                 path1.boolorth=False
                 path1.booltrans=False
                 g._LISTPATHS=g._LISTPATHS[1:]
+                g._LISTBANKANGLES[1:]
         elif trans1.type=="Flyover":
             if trans1.boolarc1==True:
                 proj = ortho_projection(point, trans1.list_items[1], None)
@@ -264,6 +265,7 @@ def path_sequencing(point, path1, path2):
                     path1.boolorth=False
                     path1.booltrans=False
                     g._LISTPATHS=g._LISTPATHS[1:]
+                    g._LISTBANKANGLES[1:]
  
 
 def active_leg(legs_list):  # renvoie la leg active et la supprime
@@ -282,7 +284,6 @@ def sequencing_conditions(aircraft, path):
             g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
             g._LISTPOINTS=g._LISTPOINTS[1:]
             g._TOWPT=g._LISTPOINTS[1]
-            g._LISTBANKANGLES[1:]
             #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
             print("ça séquence fort")
             g._LISTPATHS[0].boolactive=False
@@ -302,7 +303,6 @@ def sequencing_conditions(aircraft, path):
                 g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
                 g._LISTPOINTS=g._LISTPOINTS[1:]
                 g._TOWPT=g._LISTPOINTS[1]
-                g._LISTBANKANGLES[1:]
                 #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
                 print("ça séquence fort")
                 g._LISTPATHS[0].boolactive=False
@@ -316,22 +316,26 @@ def bank_angle(aircraft, path1, path2):
     
     if path1.boolorth==True and path1.booltrans==False:
         proj=ortho_projection(aircraft, path1.ortho, None)
-
+        return 0
+    '''
         if proj.distance(path1.ortho.end)>g._GS*TEMPS_REP/3600:
             return 0
         else:
             if path1.transition.type=="Flyby":
                 return g._LISTBANKANGLES[0]
             return g._LISTBANKANGLES[0][0]
+    '''
     elif path1.boolorth==False and path1.booltrans==True:
         proj=ortho_projection(aircraft, path1.ortho, path1.transition)
         
         if path1.transition.type=="Flyby":
-            
+            return g._LISTBANKANGLES[0]
+        '''
             if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*TEMPS_REP/3600:
                 return g._LISTBANKANGLES[0]
             else:
                 return 0
+                '''
         elif path1.transition.type=="Flyover":
             
             if path1.transition.boolarc1==True:

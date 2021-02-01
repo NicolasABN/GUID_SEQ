@@ -339,10 +339,7 @@ def bank_angle(aircraft, path1, path2):
                 else:
                     return 0
             elif path1.transition.boolseg==True:
-                 if ortho_distance(proj,path1.transition.list_items[1])>g._GS*TEMPS_REP/3600:
-                     return 0
-                 else:
-                     return g._LISTBANKANGLES[0][1]
+                 return 0
             elif path1.transition.boolarc2==True:
                 if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*TEMPS_REP/3600:
                     return g._LISTBANKANGLES[0][1]

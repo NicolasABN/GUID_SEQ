@@ -24,7 +24,7 @@ def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l
     elif path.boolorth==False and path.booltrans==True:
         
         proj=ortho_projection(aircraft, path.ortho, path.transition)
-        print(proj)
+        #print(proj)
         se=[proj.x-path.ortho.end.x,proj.y-path.ortho.end.y,0]
         ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]
         s=np.sign(np.cross(se,ap)[2])

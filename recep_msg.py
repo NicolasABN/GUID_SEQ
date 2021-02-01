@@ -84,13 +84,7 @@ def recepPaths(*arg):
 def recepStateVector(*arg):
     x=float(arg[2])/1852            #Metres convertis en NM
     y=float(arg[1])/1852            #Echange des paramètres X et Y pour être coherents avec la convention prise dans le model avion
-    X=[]
-    Y=[]
-    X.append(x)
-    Y.append(y)
-    plt.close()
-    plt.plot(X,Y)
-    plt.show()
+    
     hdg=float(arg[6])               #EN RADIANS
     g._AIRCRAFT=Aircraft(x,y,hdg)
     if g._LISTPATHS!=[]:

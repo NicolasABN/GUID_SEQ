@@ -5,6 +5,7 @@ import numpy as np
 import global_variables as g
 import send_msg as s
 
+TEMPS_REP = 3
 
 def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l'avion est à gauche
     
@@ -314,7 +315,7 @@ def bank_angle(aircraft, path1, path2):
     if path1.boolorth==True and path1.booltrans==False:
         proj=ortho_projection(aircraft, path1.ortho, None)
 
-        if proj.distance(path1.ortho.end)>g._GS*0.05/3600:
+        if proj.distance(path1.ortho.end)>g._GS*TEMPS_REP/3600:
             return 0
         else:
             if path1.transition.type=="Flyby":
@@ -325,24 +326,24 @@ def bank_angle(aircraft, path1, path2):
         
         if path1.transition.type=="Flyby":
             
-            if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*0.05/3600:
+            if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*TEMPS_REP/3600:
                 return g._LISTBANKANGLES[0]
             else:
                 return 0
         elif path1.transition.type=="Flyover":
             
             if path1.transition.boolarc1==True:
-                if transition_distance(proj, path1.transition.list_items[1].start, path1.transition)>g._GS*0.05/3600:
+                if transition_distance(proj, path1.transition.list_items[1].start, path1.transition)>g._GS*TEMPS_REP/3600:
                     return g._LISTBANKANGLES[0][0]
                 else:
                     return 0
             elif path1.transition.boolseg==True:
-                 if ortho_distance(proj,path1.transition.list_items[1])>g._GS*0.05/3600:
+                 if ortho_distance(proj,path1.transition.list_items[1])>g._GS*TEMPS_REP/3600:
                      return 0
                  else:
                      return g._LISTBANKANGLES[0][1]
             elif path1.transition.boolarc2==True:
-                if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*0.05/3600:
+                if transition_distance(proj, path2.ortho.start, path1.transition)>g._GS*TEMPS_REP/3600:
                     return g._LISTBANKANGLES[0][1]
                 else:
                     return 0

@@ -82,8 +82,8 @@ def recepPaths(*arg):
 #GT_TRAJ TRAJ_Paths=[Path(TRAJ_Transitions[0], TRAJ_Segments[0]), Path(TRAJ_Transitions[1], TRAJ_Segments[1])]   
 
 def recepStateVector(*arg):
-    x=float(arg[1])/1852            #Metres convertis en NM
-    y=float(arg[2])/1852
+    x=float(arg[2])/1852            #Metres convertis en NM
+    y=float(arg[1])/1852
     X=[]
     Y=[]
     X.append(x)

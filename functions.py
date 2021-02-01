@@ -61,7 +61,9 @@ def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading 
     elif path.boolorth==False and path.booltrans==True:
         xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
         if path.transition.type=="Flyby":
-            
+            v1=[xc-xe, yc-ye, 0]
+            v2=[0,1,0]
+            s=np.sign(np.cross(v1,v2)[2])
             if xc==aircraft.x:
                 angle=s*pi/2
             else :

@@ -237,7 +237,8 @@ def path_sequencing(point, path1, path2):
                 path1.boolorth=False
                 path1.booltrans=False
                 g._LISTPATHS=g._LISTPATHS[1:]
-                g._LISTBANKANGLES[1:]
+                g._LISTBANKANGLES=g._LISTBANKANGLES[1:]
+                
         elif trans1.type=="Flyover":
             if trans1.boolarc1==True:
                 proj = ortho_projection(point, trans1.list_items[1], None)
@@ -265,7 +266,7 @@ def path_sequencing(point, path1, path2):
                     path1.boolorth=False
                     path1.booltrans=False
                     g._LISTPATHS=g._LISTPATHS[1:]
-                    g._LISTBANKANGLES[1:]
+                    g._LISTBANKANGLES=g._LISTBANKANGLES[1:]
  
 
 def active_leg(legs_list):  # renvoie la leg active et la supprime

@@ -140,7 +140,7 @@ def alongpath_distance(aircraft, path1, path2):
     
         disttrans1=transition_distance(ortho_projection(aircraft,path1.ortho,path1.transition),path2.ortho.start,path1.transition)
         distseg=ortho_distance(path2.ortho.start,path2.ortho)
-        disttrans2=transition_distance(path2.ortho.end,ortho_projection(g._TOWPT,path2.ortho,path2.transition.list_items[0]),path2.transition)
+        disttrans2=transition_distance(path2.ortho.end,ortho_projection(g._TOWPT,path2.ortho,path2.transition),path2.transition)
         
         return disttrans1+distseg+disttrans2
   

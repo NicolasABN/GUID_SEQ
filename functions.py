@@ -8,13 +8,13 @@ import send_msg as s
 
 def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l'avion est à gauche
     
-    print(aircraft)
+    #print(aircraft)
     if path.boolorth==True and path.booltrans==False:
         
-        print(path.ortho.start)
-        print(path.ortho.end)
+        #print(path.ortho.start)
+        #print(path.ortho.end)
         proj=ortho_projection(aircraft, path.ortho, None)
-        print(proj)
+        #print(proj)
         se=[path.ortho.end.x-path.ortho.start.x,path.ortho.end.y-path.ortho.start.y,0]
         ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]
         s=np.sign(np.cross(se,ap)[2])

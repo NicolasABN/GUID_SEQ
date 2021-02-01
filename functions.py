@@ -335,7 +335,7 @@ def bank_angle(aircraft, path1, path2):
                 return g._LISTBANKANGLES[0]
             else:
                 return 0
-                '''
+        '''
         elif path1.transition.type=="Flyover":
             
             if path1.transition.boolarc1==True:

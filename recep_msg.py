@@ -87,7 +87,7 @@ def recepStateVector(*arg):
     
     hdg=float(arg[6])               #EN RADIANS
     g._AIRCRAFT=Aircraft(x,y,hdg)
-    if g._LISTPATHS!=[]:
+    if g._LISTPATHS!=[] and len(g._LISTPATHS)>1:
         path_sequencing(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1]) # Au cas où il ne reste plus qu'un seul path dans la trajectoire
         if sequencing_conditions(g._AIRCRAFT,g._LISTPATHS[0]):
             s.sendActiveLeg(g._ACTIVELEG[0])
@@ -96,7 +96,14 @@ def recepStateVector(*arg):
         xtk_, tae_, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0],g._LISTPATHS[1]), g._AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
         apdist=alongpath_distance(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1])
         sendData(xtk_, tae_, dtwpt, bank_angle_ref, apdist)
-        
+    elif g._LISTPATHS!=[] and len(g._LISTPATHS)==1:
+        xtk_=xtk(g._AIRCRAFT, g._LISTPATHS[0])
+        tae_=tae(g._AIRCRAFT, g._LISTPATHS[0],None)
+        dtwpt=g._AIRCRAFT.distance(g._TOWPT)
+        bank_angle_ref=0
+        apdist = alongpath_distance(g._AIRCRAFT, g._LISTPATHS[0], None)
+        sendData(xtk_, tae_, dtwpt, bank_angle_ref, apdist)
+
     
 
 #StateVector x=15 y=12 z=0 Vp=2 fpa=4 psi=5 phi=10

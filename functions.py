@@ -1,9 +1,9 @@
 from math import *
 from geometryToSEQ import *
-import sys
+#import sys
 import numpy as np
 import global_variables as g
-import send_msg as s
+#import send_msg as s
 
 TEMPS_REP = 3
 
@@ -37,7 +37,6 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
 
     
     xs, ys, xe, ye = path1.ortho.start.x, path1.ortho.start.y, path1.ortho.end.x, path1.ortho.end.y
-    xs2, ys2=path2.ortho.start.x, path2.ortho.start.y
     v1=[xe-xs, ye-ys, 0]
     v2=[0,1,0]
     s=np.sign(np.cross(v1,v2)[2])   
@@ -58,8 +57,9 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
             trackangleerror+=2*pi
             print("c est inferieur a -pi")
         return trackangleerror
-  
+
     elif path1.boolorth==False and path1.booltrans==True:
+        xs2, ys2 = path2.ortho.start.x, path2.ortho.start.y
         xc, yc = path1.transition.list_items[0].centre.x, path1.transition.list_items[0].centre.y
         if path1.transition.type== "Flyby":
             v2 = [xs2 - xe, ys2 - ye, 0]
@@ -93,12 +93,11 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
                 return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), True, False), path2)
             elif path1.transition.boolarc2==True:
                 return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), False, True), path2)
-'''            
+'''
 act=Aircraft(0,0,-pi/4)
 path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("Flyby",[Arc(Point(70,60),10,10)]))
-print(tae(act,path))
-  '''  
-
+print(tae(act,path,None))
+'''
 
 
 def arc_distance(p1,p2,arc): # Calcul la distance entre deux points sur la transition
@@ -136,10 +135,12 @@ def transition_distance(p1, p2, transition):
 def alongpath_distance(aircraft, path1, path2):
     
     if path1.boolorth==True and path1.booltrans==False:
-        
-        distseg=ortho_distance(ortho_projection(aircraft,path1.ortho,None),path1.ortho)
-        disttrans=transition_distance(path1.ortho.end,ortho_projection(g._TOWPT,path1.ortho,path1.transition),path1.transition)
-        
+        if path1.transition.type!=None:
+            distseg=ortho_distance(ortho_projection(aircraft,path1.ortho,None),path1.ortho)
+            disttrans=transition_distance(path1.ortho.end,ortho_projection(g._TOWPT,path1.ortho,path1.transition),path1.transition)
+        else:
+            distseg = ortho_distance(ortho_projection(aircraft, path1.ortho, None), path1.ortho)
+            disttrans=0
         return distseg+disttrans
     
     elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==True: # Cas ou on est au niveau de la transition et on a pas changé de leg actif
@@ -148,13 +149,18 @@ def alongpath_distance(aircraft, path1, path2):
         
         return disttrans
     
-    else :  # Cas ou on est au niveau de la transition et on a changé de leg actif
+    elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==False and path2.transition.type!=None :  # Cas ou on est au niveau de la transition et on a changé de leg actif
     
         disttrans1=transition_distance(ortho_projection(aircraft,path1.ortho,path1.transition),path2.ortho.start,path1.transition)
         distseg=ortho_distance(path2.ortho.start,path2.ortho)
         disttrans2=transition_distance(path2.ortho.end,ortho_projection(g._TOWPT,path2.ortho,path2.transition),path2.transition)
-        
         return disttrans1+distseg+disttrans2
+
+    elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==False and path2.transition.type==None :
+
+        disttrans1 = transition_distance(ortho_projection(aircraft, path1.ortho, path1.transition), path2.ortho.start, path1.transition)
+        distseg = ortho_distance(path2.ortho.start, path2.ortho)
+        return disttrans1+distseg
   
 
 

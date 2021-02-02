@@ -4,7 +4,7 @@ from ivy.std_api import *
 import time
 from functions import *
 
-_TIME=0
+
 
 
 def sendActiveLeg(numSeq):

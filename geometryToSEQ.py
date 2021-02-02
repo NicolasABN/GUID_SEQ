@@ -167,12 +167,13 @@ class Aircraft(Point):
         super().__init__(x,y)
         if hdg>np.pi:
             self.hdg=hdg-2*np.pi
+        else:
+            self.hdg=hdg
 
         
         
-        
-        
-        
+
+
         
         
         

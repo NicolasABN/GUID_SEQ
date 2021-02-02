@@ -71,7 +71,7 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
                 a=(yc-aircraft.y)/(xc-aircraft.x)    # Attention au cas ou droite verticale ou horizontale
                 v1=[1,-1/a,0]
                 if np.vdot(v1,v2)<0:
-                    v1=[1,1/a,0]
+                    v1=[-1,1/a,0]
                 s=np.sign(np.cross(v1,v3)[2])
                 if a==0:
                     s = np.sign(np.vdot(v2, v3))

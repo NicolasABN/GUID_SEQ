@@ -247,7 +247,7 @@ def path_sequencing(point, path1, path2):
         if trans1.type=="Flyby":
             proj = ortho_projection(point, ortho2, None)
             x2, y2 = proj.x, proj.y
-            if (((x1 >= xs1 and x1 <= xe1) or (x1 <= xs1 and x1 >= xe1)) and ((y1 >= ys1 and y1 <= ye1) or (y1 <= ys1 and y1 >= ye1))):
+            if (((x1 >= xs1 and x1 <= xe1) or (x1 <= xs1 and x1 >= xe1)) and ((y1 >= ys1 and y1 <= ye1) or (y1 <= ys1 and y1 >= ye1))) and path1.boolactive==True:
                 path1.boolorth = True
                 path1.booltrans = False
 
@@ -304,7 +304,7 @@ def active_leg(legs_list):  # renvoie la leg active et la supprime
             
 def sequencing_conditions(aircraft, path):
 
-    if path.boolorth==False and path.booltrans==True:
+    if path.boolorth==False and path.booltrans==True and path.boolactive==True:
         if path.transition.type=="Flyover":
             g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
             g._LISTPOINTS=g._LISTPOINTS[1:]

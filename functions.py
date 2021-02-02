@@ -292,9 +292,11 @@ def path_sequencing(point, path1, path2):
  
 
 def active_leg(legs_list):  # renvoie la leg active et la supprime
-
+    print(legs_list)
     legs_list=legs_list[1:]
     active_leg=legs_list[0]  # active_leg contient le numéro de la leg
+    print(legs_list)
+    print(active_leg)
     g._NUMSEQ=int(active_leg[0])
     return active_leg,legs_list
 

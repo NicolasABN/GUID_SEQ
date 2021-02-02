@@ -92,7 +92,7 @@ def recepStateVector(*arg):
     if g._LISTPATHS!=[] and len(g._LISTPATHS)>1:
         path_sequencing(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1]) # Au cas où il ne reste plus qu'un seul path dans la trajectoire
         if sequencing_conditions(g._AIRCRAFT,g._LISTPATHS[0]):
-            s.sendActiveLeg(g._ACTIVELEG[0])
+            sendActiveLeg(g._ACTIVELEG[0])
             #s.sendNewLegList(g._LEGLIST)
             
         xtk_, tae_, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0],g._LISTPATHS[1]), g._AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])

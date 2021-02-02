@@ -79,7 +79,7 @@ def recepPaths(*arg):
     L=arg[1].strip()
     g._LISTPATHS=eval(L)
     print("Paths reçus")
-    print(len(g._LISTPOINTS))
+    print(len(g._LISTPATHS))
     
 #GT_TRAJ TRAJ_Paths=[Path(TRAJ_Transitions[0], TRAJ_Segments[0]), Path(TRAJ_Transitions[1], TRAJ_Segments[1])]   
 

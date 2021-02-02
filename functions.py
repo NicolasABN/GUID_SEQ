@@ -79,7 +79,6 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
                 else:    
                     angle=-atan(-1/a)+s*pi/2
             trackangleerror=aircraft.hdg-angle
-            print(trackangleerror)
             if trackangleerror>pi:
                 trackangleerror+=-2*pi
             elif trackangleerror<-pi:

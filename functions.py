@@ -33,21 +33,22 @@ def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l
         return s*aircraft.distance(proj)
 
 
-def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading vers la trajectoire; heading entre nordMag et cap
+def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du heading vers la trajectoire; heading entre nordMag et cap
 
     
-    xs, ys, xe, ye = path.ortho.start.x, path.ortho.start.y, path.ortho.end.x, path.ortho.end.y
+    xs, ys, xe, ye = path1.ortho.start.x, path1.ortho.start.y, path1.ortho.end.x, path1.ortho.end.y
+    xs2, ys2=path2.ortho.start.x, path2.ortho.start.y
     v1=[xe-xs, ye-ys, 0]
     v2=[0,1,0]
     s=np.sign(np.cross(v1,v2)[2])   
-    if path.boolorth==True and path.booltrans==False:
+    if path1.boolorth==True and path1.booltrans==False:
         if s==0:
             if ys<ye:
                 angle=0
             else:
                 angle=-pi
         else:
-            angle=-atan((path.ortho.end.y-path.ortho.start.y)/(path.ortho.end.x-path.ortho.start.x))+s*pi/2
+            angle= -atan((path1.ortho.end.y - path1.ortho.start.y) / (path1.ortho.end.x - path1.ortho.start.x)) + s * pi / 2
         trackangleerror=aircraft.hdg-angle
         
         if trackangleerror>pi:
@@ -58,19 +59,23 @@ def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading 
             print("c est inferieur a -pi")
         return trackangleerror
   
-    elif path.boolorth==False and path.booltrans==True:
-        xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
-        if path.transition.type=="Flyby":
-            v1=[xc-xe, yc-ye, 0]
-            v2=[0,1,0]
-            s=np.sign(np.cross(v1,v2)[2])
+    elif path1.boolorth==False and path1.booltrans==True:
+        xc, yc = path1.transition.list_items[0].centre.x, path1.transition.list_items[0].centre.y
+        if path1.transition.type== "Flyby":
+            v2 = [xs2 - xe, ys2 - ye, 0]
+            v3=[0,1,0]
             if xc==aircraft.x:
+                s=np.sign(np.cross(v2,v3)[2])
                 angle=s*pi/2
-            else :
+            else:
                 a=(yc-aircraft.y)/(xc-aircraft.x)    # Attention au cas ou droite verticale ou horizontale
-                
+                v1=[1,-1/a,0]
+                if np.vdot(v1,v2)<0:
+                    v1=[1,1/a,0]
+                s=np.sign(np.cross(v1,v3)[2])
                 if a==0:
-                    angle=0
+                    s = np.sign(np.vdot(v2, v3))
+                    angle=pi/2-s*pi/2
                 else:    
                     angle=-atan(-1/a)+s*pi/2
             trackangleerror=aircraft.hdg-angle
@@ -81,13 +86,13 @@ def tae(aircraft, path): # Signé en fonction du sens trigo tae : va du heading 
                 trackangleerror+=2*pi
             return trackangleerror
         
-        elif path.transition.type=="Flyover":
-            if path.transition.boolarc1==True:
-                return tae(aircraft, Path(path.ortho,Transition("Flyby",[path.transition.list_items[0]], False, True)))
-            elif path.transition.boolseg==True:
-                return tae(aircraft, Path(path.transition.list_items[1], Transition("Flyby",[path.transition.list_items[2]]), True, False))
-            elif path.transition.boolarc2==True:
-                return tae(aircraft, Path(path.transition.list_items[1], Transition("Flyby",[path.transition.list_items[2]]), False, True))
+        elif path1.transition.type== "Flyover":
+            if path1.transition.boolarc1==True:
+                return tae(aircraft, Path(path1.ortho, Transition("Flyby", [path1.transition.list_items[0]], False, True)))
+            elif path1.transition.boolseg==True:
+                return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), True, False))
+            elif path1.transition.boolarc2==True:
+                return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), False, True))
 '''            
 act=Aircraft(0,0,-pi/4)
 path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("Flyby",[Arc(Point(70,60),10,10)]))
@@ -206,8 +211,6 @@ def ortho_projection(point, ortho, transition=None): #Renvoie la projection du p
         elif transition.boolarc2==True:
             return ortho_projection(point, transition.list_items[1], Transition("Flyby",[transition.list_items[2]]))
 
-print(ortho_projection(Point(0,1),Ortho(Point(0,0),Point(1,1)),None))
-
 
 def path_sequencing(point, path1, path2):
     ortho1, trans1, ortho2 = path1.ortho, path1.transition, path2.ortho
@@ -215,11 +218,12 @@ def path_sequencing(point, path1, path2):
     xs2, ys2, xe2, ye2 = ortho2.start.x, ortho2.start.y, ortho2.end.x, ortho2.end.y 
     xc, yc = trans1.list_items[0].centre.x, trans1.list_items[0].centre.y
     xwpt, ywpt = g._TOWPT.x, g._TOWPT.y
-    
+    proj = ortho_projection(point, ortho1, None)
+    x1, y1 = proj.x, proj.y
+
     if path1.boolorth==True and path1.booltrans==False:
         
-        proj = ortho_projection(point, ortho1, None)
-        x1, y1 = proj.x, proj.y
+
         if not (((x1>=xs1 and x1<=xe1) or (x1<=xs1 and x1>=xe1)) and ((y1>=ys1 and y1<=ye1) or (y1<=ys1 and y1>=ye1))):
             if proj.distance(ortho1.end)<1:
                 path1.boolorth=False
@@ -234,19 +238,26 @@ def path_sequencing(point, path1, path2):
                     
             
     elif path1.boolorth==False and path1.booltrans==True:
+
         if trans1.type=="Flyby":
             proj = ortho_projection(point, ortho2, None)
             x2, y2 = proj.x, proj.y
-            
-            if (((x2>=xs2 and x2<=xe2) or (x2<=xs2 and x2>=xe2)) and ((y2>=ys2 and y2<=ye2) or (y2<=ys2 and y2>=ye2))):
-                
+            if (((x1 >= xs1 and x1 <= xe1) or (x1 <= xs1 and x1 >= xe1)) and ((y1 >= ys1 and y1 <= ye1) or (y1 <= ys1 and y1 >= ye1))):
+                path1.boolorth = True
+                path1.booltrans = False
+
+            elif (((x2>=xs2 and x2<=xe2) or (x2<=xs2 and x2>=xe2)) and ((y2>=ys2 and y2<=ye2) or (y2<=ys2 and y2>=ye2))):
                 path1.boolorth=False
                 path1.booltrans=False
                 g._LISTPATHS=g._LISTPATHS[1:]
                 g._LISTBANKANGLES=g._LISTBANKANGLES[1:]
                 
         elif trans1.type=="Flyover":
-            if trans1.boolarc1==True:
+            if (((x1 >= xs1 and x1 <= xe1) or (x1 <= xs1 and x1 >= xe1)) and ((y1 >= ys1 and y1 <= ye1) or (y1 <= ys1 and y1 >= ye1))):
+                path1.boolorth = True
+                path1.booltrans = False
+                path1.transition.boolarc1, path1.transition.boolseg, path1.transition.boolarc2=True, False, False
+            elif trans1.boolarc1==True:
                 proj = ortho_projection(point, trans1.list_items[1], None)
                 x2, y2 = proj.x, proj.y
                 xs, ys = trans1.list_items[1].start.x, trans1.list_items[1].start.y

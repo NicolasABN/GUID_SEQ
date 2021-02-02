@@ -88,11 +88,11 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
         
         elif path1.transition.type== "Flyover":
             if path1.transition.boolarc1==True:
-                return tae(aircraft, Path(path1.ortho, Transition("Flyby", [path1.transition.list_items[0]], False, True)))
+                return tae(aircraft, Path(path1.ortho, Transition("Flyby", [path1.transition.list_items[0]], False, True)), path2)
             elif path1.transition.boolseg==True:
-                return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), True, False))
+                return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), True, False), path2)
             elif path1.transition.boolarc2==True:
-                return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), False, True))
+                return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), False, True), path2)
 '''            
 act=Aircraft(0,0,-pi/4)
 path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("Flyby",[Arc(Point(70,60),10,10)]))

@@ -34,6 +34,7 @@ def recepLegList(*arg):
     g._ACTIVELEG=g._LEGLIST[0]
     print(g._ACTIVELEG)
     print(g._LEGLIST)
+    print(len(g._LEGLIST))
     #print(g._TOWPT)
     
 #FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT=N100000000 LON=E0100000000;ID=WPT2 SEQ=1 COURSE=10  LAT=N600000000 LON=E0700000000
@@ -78,6 +79,7 @@ def recepPaths(*arg):
     L=arg[1].strip()
     g._LISTPATHS=eval(L)
     print("Paths reçus")
+    print(len(g._LISTPOINTS))
     
 #GT_TRAJ TRAJ_Paths=[Path(TRAJ_Transitions[0], TRAJ_Segments[0]), Path(TRAJ_Transitions[1], TRAJ_Segments[1])]   
 

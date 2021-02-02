@@ -93,7 +93,7 @@ def recepStateVector(*arg):
             s.sendActiveLeg(g._ACTIVELEG[0])
             #s.sendNewLegList(g._LEGLIST)
             
-        xtk_, tae_, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0]), g._AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
+        xtk_, tae_, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0],g._LISTPATHS[1]), g._AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
         apdist=alongpath_distance(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1])
         sendData(xtk_, tae_, dtwpt, bank_angle_ref, apdist)
         

@@ -165,8 +165,9 @@ class Aircraft(Point):
     
     def __init__(self,x,y,hdg):
         super().__init__(x,y)
-        self.hdg=hdg
-        
+        if hdg>np.pi:
+            self.hdg=hdg-2*np.pi
+
         
         
         

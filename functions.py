@@ -323,10 +323,12 @@ def sequencing_conditions(aircraft, path):
                 sgn=np.sign(aircraft.y-(a*aircraft.x+b))
             
             if g._SIGN!=sgn:
-                
+                print(g._LEGLIST)
                 g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
                 g._LISTPOINTS=g._LISTPOINTS[1:]
                 g._TOWPT=g._LISTPOINTS[1]
+                print(g._LEGLIST)
+                print(g._LISTPOINTS)
                 #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
                 print("ça séquence fort")
                 g._LISTPATHS[0].boolactive=False
@@ -413,7 +415,7 @@ print(path1.boolorth)
 print(path1.booltrans)
 """
 
-
+"""
 act=Aircraft(0,1,0)
 ort=Ortho(Point(0,0),Point(1,1))
 print(ortho_projection(act,ort,None))
@@ -426,7 +428,7 @@ act=Aircraft(1.5,1.5,0)
 trans=Transition("Flyover",[Arc(Point(-1,0),1,1),Segment(Point(0,0),Point(1,1)),Arc(Point(2,1),1,1)])
 print(ortho_projection(act,ort,trans))
 
-
+"""
 
 
 

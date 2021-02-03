@@ -2,7 +2,6 @@
 
 from geometryToSEQ import *
 
-_GS=220
 _TIME=0
 _SIGN=0
 _AIRCRAFT=Aircraft(0,0,0)

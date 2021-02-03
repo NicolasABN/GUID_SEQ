@@ -4,11 +4,9 @@ from math import *
 import global_variables as g
 
 
-TEMPS_REP = 3
-
 def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l'avion est à gauche
     
-    #print(aircraft)
+    #poinfue
     if path.boolorth==True and path.booltrans==False:
         
         #print(path.ortho.start)

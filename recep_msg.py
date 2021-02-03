@@ -23,7 +23,7 @@ def recepTime(*arg):
 def recepMode(*arg):
     s=arg[3].strip()
     g._MODE=eval(s)
-    print(g._MODE)
+
     
 def recepLegList(*arg):
     L=arg[2].strip().strip("(").strip(")").strip(";").split(";")

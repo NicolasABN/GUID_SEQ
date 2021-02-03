@@ -1,9 +1,6 @@
 # Envoi des messages
 
 from ivy.std_api import *
-import time
-from functions import *
-
 
 
 

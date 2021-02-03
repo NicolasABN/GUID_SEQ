@@ -8,32 +8,35 @@ from recep_msg import *
 from send_msg import *
 import time
 
-#192.168.43.255:2010
+
 if __name__=='__main__':
+    
+    """ Connection au bus IVY """
     app_name="GUID_SEQ_APP"
     ivy_bus=""
     bus=IvyInit(app_name,"GUID_SEQ is Ready",0,on_cx,on_die)
     IvyStart(ivy_bus)
     time.sleep(1)
-    #sendData(11,25,35,1)
-    IvyBindMsg(recepTime,'^Time t=(.*)')     # GC_AP Time=(.*) AP_State=(.*) AP_Mode='NAV'
-    IvyBindMsg(recepMode, 'GC_AP Time=(.*) AP_State=(.*) AP_Mode=(.*)')
-
-    IvyBindMsg(recepLegList,'^FL_LegList Time=(.*) LegList=(.*)') # Reception de la liste des legs
     
-    IvyBindMsg(recepGS,'^GT_PARAM_GS=(.*)')
-    IvyBindMsg(recepBankAngles,'^GT Liste_BankAngles=(.*)')
-
+    """ Abonnement aux messages """
     
+    IvyBindMsg(recepTime,'^Time t=(.*)')     # Reception du temps
+    IvyBindMsg(recepMode, 'GC_AP Time=(.*) AP_State=(.*) AP_Mode=(.*)') # Reception du mode de l'AP (NAV ou HDG)
+
+    IvyBindMsg(recepLegList,'^FL_LegList Time=(.*) LegList=(.*)')   # Reception de la liste des legs
+    IvyBindMsg(recepBankAngles,'^GT Liste_BankAngles=(.*)')     # Reception des bankangles de la trajectoire
+
+    # Reception de la trajectoire
     IvyBindMsg(recepPoints,'^GT Liste_Points=(.*)') # Reception des points
     IvyBindMsg(recepSegments,'^GT Liste_Segments=(.*)') # Reception des segments
-    IvyBindMsg(recepOrthos, '^GT Liste_Orthos=(.*)')
+    IvyBindMsg(recepOrthos, '^GT Liste_Orthos=(.*)') # Reception des orthos
     IvyBindMsg(recepTransitions,'^GT Liste_Transitions=(.*)') # Reception des transitions
     IvyBindMsg(recepPaths,'^GT Liste_Paths=(.*)') # Reception des paths
+    
+    # Reception du vecteur d'etat (position de l'avion et heading)
     IvyBindMsg(recepStateVector,'^StateVector x=(.*) y=(.*) z=(.*) Vp=(.*) fpa=(.*) psi=(.*) phi=(.*)') # Reception du vecteur d'état 
     
     
-    #"FL_LegList Time=1 LegList=ID=WPT1 SEQ=0 COURSE=110  LAT=1 LON=1 ;ID=WPT2 SEQ=1 COURSE=10  LAT=2 LON=-2"
     IvyMainLoop()
     
     

@@ -5,7 +5,6 @@ Created on Wed Nov 18 15:43:09 2020
 @author: aubin
 """
 from recep_msg import *
-from send_msg import *
 import time
 
 

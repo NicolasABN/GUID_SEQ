@@ -1,7 +1,8 @@
 # Module des fonctions de calcul
-
 from math import *
 import global_variables as g
+from geometryToSEQ import *
+import numpy as np
 
 
 def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négative si l'avion est à gauche

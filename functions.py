@@ -359,7 +359,7 @@ def sequencing_conditions(aircraft, path):          # Séquencement du leg actif
                     hdg=aircraft.hdg
                     proj=ortho_projection(aircraft, path.ortho, path.transition)
                     v1=[-sin(hdg), cos(hdg)]                                        # Vecteur directeur de l'avion
-                    xe, ye = path.ortho.end.x, path.ortho.end.y1                    
+                    xe, ye = path.ortho.end.x, path.ortho.end.y                    
                     v2=[proj.x-xe, proj.y-ye]                                       # Vecteur entre la fin de l'ortho et le projeté de l'avion sur la transition
                     if np.sign(np.vdot(v1,v2))>0 and aircraft.distance(path.ortho.end)<5:   # L'avion doit être dans le même sens que la trajectoire et assez proche du waypoint (<5NM) 
                         g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)             # Séquencement de la même manière qu'au dessus

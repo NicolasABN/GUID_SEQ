@@ -304,6 +304,7 @@ def sequencing_conditions(aircraft, path):
                 g._TOWPT=g._LISTPOINTS[1]
                 #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
                 print("ça séquence !")
+                print(g._LEGLIST)
                 g._LISTPATHS[0].boolactive=False
                 return True
             
@@ -317,6 +318,7 @@ def sequencing_conditions(aircraft, path):
                     g._LISTPOINTS=g._LISTPOINTS[1:]
                     g._TOWPT=g._LISTPOINTS[1]
                     print("ça séquence en mode hdg !")
+                    print(g._LEGLIST)
                     g._LISTPATHS[0].boolactive=False
                     return True 
                 
@@ -337,6 +339,7 @@ def sequencing_conditions(aircraft, path):
                     g._TOWPT=g._LISTPOINTS[1]
                     #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
                     print("ça séquence !")
+                    print(g._LEGLIST)
                     g._LISTPATHS[0].boolactive=False
                     return True
                 elif g._MODE=='HDG':
@@ -350,6 +353,7 @@ def sequencing_conditions(aircraft, path):
                         g._LISTPOINTS=g._LISTPOINTS[1:]
                         g._TOWPT=g._LISTPOINTS[1]
                         print("ça séquence en mode hdg !")
+                        print(g._LEGLIST)
                         g._LISTPATHS[0].boolactive=False
                         return True 
         

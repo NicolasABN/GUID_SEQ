@@ -1,9 +1,8 @@
+# Module des fonctions de calcul
+
 from math import *
-from geometryToSEQ import *
-#import sys
-import numpy as np
 import global_variables as g
-#import send_msg as s
+
 
 TEMPS_REP = 3
 

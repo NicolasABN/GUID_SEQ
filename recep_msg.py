@@ -4,6 +4,7 @@
 from send_msg import *
 from functions import *
 from geometryToSEQ import *
+import global_variables as g
 
 def on_cx(agent, connected):
     pass

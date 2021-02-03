@@ -6,7 +6,7 @@ import global_variables as g
 
 def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négative si l'avion est à gauche
     
-    """ Avion au niveau de l'ortho (True / False) """
+    #Avion au niveau de l'ortho (True / False) 
     if path.boolorth==True and path.booltrans==False:   
        
         proj=ortho_projection(aircraft, path.ortho, None)               #projete de l'avion sur l'ortho
@@ -16,9 +16,9 @@ def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négative si 
         
         return s*aircraft.distance(proj)                                #xtk signée
         
-    """ Avion au niveau de la transition (False / True) """
-    elif path.boolorth==False and path.booltrans==True:                 #False et True ==> avion au niveau de la transition
-        
+    #Avion au niveau de la transition (False / True) 
+    elif path.boolorth==False and path.booltrans==True:                 #False et True : avion au niveau de la transition
+
         proj=ortho_projection(aircraft, path.ortho, path.transition)    #projete de l'avion sur la transition
         se=[proj.x-path.ortho.end.x,proj.y-path.ortho.end.y,0]          #vecteur l'ortho.end-->projete
         ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]                     #vecteur avion-->projete
@@ -81,7 +81,7 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
                 trackangleerror+=2*pi
             return trackangleerror
         
-        """ Fly over traité comme un flyby particulier"""
+        #Fly over traité comme un flyby particulier
         elif path1.transition.type== "Flyover":
             #Avion au niveau du premier arc
             if path1.transition.boolarc1==True:
@@ -111,7 +111,7 @@ def transition_distance(p1, p2, transition):    # Calcul la distance entre deux 
     if transition.type=="Flyby":
         return arc_distance(p1,p2,transition.list_items[0])
     
-    """Flyover traité comme des flyby particuliers"""
+    #Flyover traité comme des flyby particuliers
     elif transition.type=="Flyover":
         seg = transition.list_items[1]
         #Avion au niveau du premier arc
@@ -210,7 +210,7 @@ def ortho_projection(point, ortho, transition=None): #Renvoie la projection du p
                  y=a*x+b
         return(Point(x,y))
     
-    """flyover traités comme des flyby particuliers"""
+    #Flyover traités comme des flyby particuliers
     elif transition.type=="Flyover":
         
         if transition.boolarc1==True:
@@ -221,7 +221,7 @@ def ortho_projection(point, ortho, transition=None): #Renvoie la projection du p
             return ortho_projection(point, transition.list_items[1], Transition("Flyby",[transition.list_items[2]]))
 
  
- def path_sequencing(point, path1, path2):      # Séquencement du path du leg actif (Permet de savoir si l'avion est au niveau de l'ortho ou de la transition)
+def path_sequencing(point, path1, path2):      # Séquencement du path du leg actif (Permet de savoir si l'avion est au niveau de l'ortho ou de la transition)
     ortho1, trans1, ortho2 = path1.ortho, path1.transition, path2.ortho             # Récupération des données utiles aux calculs et stockage dans des variables locales
     xs1, ys1, xe1, ye1 = ortho1.start.x, ortho1.start.y, ortho1.end.x, ortho1.end.y
     xs2, ys2, xe2, ye2 = ortho2.start.x, ortho2.start.y, ortho2.end.x, ortho2.end.y 

@@ -1,8 +1,8 @@
-"""Geometry classes and utilities"""
+#Geometry classes and utilities
 import numpy as np
 
 class Point(object):
-    """Nm coordinates, with attributes x, y: int"""
+    #Nm coordinates, with attributes x, y: int
 
     def __init__(self, x, y):
         self.x = x
@@ -24,13 +24,11 @@ class Point(object):
         return (self.x ** 2 + self.y ** 2) ** 0.5
 
     def sca(self, other):
-        """sca(Point) return float
-        returns the scalar product between self and other"""
+        #sca(Point) return float returns the scalar product between self and other
         return self.x * other.x + self.y * other.y
 
     def det(self, other):
-        """det(Point) return float
-        returns the determinant between self and other"""
+        #det(Point) return float returns the determinant between self and other
         return self.x * other.y - self.y * other.x
 
     def egal(self, other):
@@ -40,19 +38,19 @@ class Point(object):
         return abs(self - other)
 
     def multiplie(self, scalaire):
-        """multiplie les coordonnees du point par un scalaire"""
+        #multiplie les coordonnees du point par un scalaire
         return Point(self.x * scalaire, self.y * scalaire)
 
     def milieu(self, other):
-        """trouve le milieu de deux points et renvoie ce nouveau point"""
+        #trouve le milieu de deux points et renvoie ce nouveau point
         new_x = (self.x + other.x) / 2
         new_y = (self.y + other.y) / 2
         return Point(new_x, new_y)
 
     def seg_dist(self, a, b):
-        """Distance from point to segment
-        @param a,b @e Point: Description of segment
-        @return Distance from Point self to segment [a, b]"""
+        #Distance from point to segment
+        #@param a,b @e Point: Description of segment
+        #@return Distance from Point self to segment [a, b]
         ab, ap, bp = b - a, self - a, self - b
         if ab.sca(ap) <= 0:
             return abs(ap)
@@ -62,8 +60,8 @@ class Point(object):
             return abs(ab.det(ap)) / abs(ab)
 
 class Segment(object):
-    """Définit une classe Segment qui correspond à la représentation graphique
-    d'un LEG"""
+    #Définit une classe Segment qui correspond à la représentation graphique
+    #d'un LEG
     def __init__(self, start, end):
         self.start = start
         self.end = end
@@ -82,8 +80,8 @@ class Segment(object):
 
 
 class Ortho(Segment):
-    """Définit une classe qui hérite de Segement mais qui correspond à la portion
-    de segment comprise dans la trajectoire de référence"""
+    #Définit une classe qui hérite de Segement mais qui correspond à la portion
+    #de segment comprise dans la trajectoire de référence
     def __init__(self, start, end):
         super().__init__(start, end)
         
@@ -122,7 +120,7 @@ class Trajectoire(object):
     
 
 class Waypoint(Point):    # Prend en paramètre lat et lon en degrés (quand on rentre des str) ou en NM (quand on rentre des entiers)
-    """Définit une classe qui hérite de Point avec un id pour identifer le waypoint"""
+    #Définit une classe qui hérite de Point avec un id pour identifer le waypoint
     def __init__(self,lat,lon):      
         x=lon
         y=lat
@@ -134,7 +132,7 @@ class Aircraft(Point):
     
     def __init__(self,x,y,hdg):
         super().__init__(x,y)
-        """HDG reçu du modele avion entre 0 et 360° ==> Conversion entre -180° et 180° """
+        #HDG reçu du modele avion entre 0 et 360° ==> Conversion entre -180° et 180° 
         if hdg>np.pi:
             self.hdg=hdg-2*np.pi
         else:

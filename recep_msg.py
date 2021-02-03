@@ -20,6 +20,11 @@ def recepTime(*arg):
     g._TIME=float(arg[1])
     #print(round(g._TIME,1))
     
+def recepMode(*arg):
+    s=arg[3].strip()
+    g._MODE=eval(s)
+    print(g._MODE)
+    
 def recepLegList(*arg):
     L=arg[2].strip().strip("(").strip(")").strip(";").split(";")
     LegList=[l.split() for l in L]                          # On découpe la liste par bloc de leg ID=WPT1 SEQ=0 COURSE=110  LAT= LON=    
@@ -89,15 +94,25 @@ def recepStateVector(*arg):
     
     hdg=float(arg[6])               #EN RADIANS
     g._AIRCRAFT=Aircraft(x,y,hdg)
+    
     if g._LISTPATHS!=[] and len(g._LISTPATHS)>1:
         path_sequencing(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1]) # Au cas où il ne reste plus qu'un seul path dans la trajectoire
+        
         if sequencing_conditions(g._AIRCRAFT,g._LISTPATHS[0]):
             sendActiveLeg(g._ACTIVELEG[0])
-            #s.sendNewLegList(g._LEGLIST)
             
-        xtk_, tae_, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0],g._LISTPATHS[1]), g._AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
-        apdist=alongpath_distance(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1])
+        if len(g._LISTPATHS)>1: 
+            xtk_, tae_, dtwpt, bank_angle_ref = xtk(g._AIRCRAFT, g._LISTPATHS[0]), tae(g._AIRCRAFT, g._LISTPATHS[0],g._LISTPATHS[1]), g._AIRCRAFT.distance(g._TOWPT), bank_angle(g._AIRCRAFT, g._LISTPATHS[0], g._LISTPATHS[1])
+            apdist=alongpath_distance(g._AIRCRAFT,g._LISTPATHS[0],g._LISTPATHS[1])
+
+        else:
+            xtk_=xtk(g._AIRCRAFT, g._LISTPATHS[0])
+            tae_=tae(g._AIRCRAFT, g._LISTPATHS[0],None)
+            dtwpt=g._AIRCRAFT.distance(g._TOWPT)
+            bank_angle_ref=0
+            apdist = alongpath_distance(g._AIRCRAFT, g._LISTPATHS[0], None)
         sendData(xtk_, tae_, dtwpt, bank_angle_ref, apdist)
+        
     elif g._LISTPATHS!=[] and len(g._LISTPATHS)==1:
         xtk_=xtk(g._AIRCRAFT, g._LISTPATHS[0])
         tae_=tae(g._AIRCRAFT, g._LISTPATHS[0],None)

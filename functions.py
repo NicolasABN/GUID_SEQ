@@ -52,10 +52,8 @@ def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du 
         
         if trackangleerror>pi:
             trackangleerror+=-2*pi
-            print("c est superieur a pi")
         elif trackangleerror<-pi:
             trackangleerror+=2*pi
-            print("c est inferieur a -pi")
         return trackangleerror
 
     elif path1.boolorth==False and path1.booltrans==True:
@@ -251,18 +249,14 @@ def path_sequencing(point, path1, path2):
                 path1.boolorth = True
                 path1.booltrans = False
 
-            elif (((x2>=xs2 and x2<=xe2) or (x2<=xs2 and x2>=xe2)) and ((y2>=ys2 and y2<=ye2) or (y2<=ys2 and y2>=ye2))):
+            elif (((x2>=xs2 and x2<=xe2) or (x2<=xs2 and x2>=xe2)) and ((y2>=ys2 and y2<=ye2) or (y2<=ys2 and y2>=ye2))) and path1.boolactive==False:
                 path1.boolorth=False
                 path1.booltrans=False
                 g._LISTPATHS=g._LISTPATHS[1:]
                 g._LISTBANKANGLES=g._LISTBANKANGLES[1:]
                 
         elif trans1.type=="Flyover":
-            if (((x1 >= xs1 and x1 <= xe1) or (x1 <= xs1 and x1 >= xe1)) and ((y1 >= ys1 and y1 <= ye1) or (y1 <= ys1 and y1 >= ye1))):
-                path1.boolorth = True
-                path1.booltrans = False
-                path1.transition.boolarc1, path1.transition.boolseg, path1.transition.boolarc2=True, False, False
-            elif trans1.boolarc1==True:
+            if trans1.boolarc1==True:
                 proj = ortho_projection(point, trans1.list_items[1], None)
                 x2, y2 = proj.x, proj.y
                 xs, ys = trans1.list_items[1].start.x, trans1.list_items[1].start.y
@@ -292,27 +286,40 @@ def path_sequencing(point, path1, path2):
  
 
 def active_leg(legs_list):  # renvoie la leg active et la supprime
-    print(legs_list)
     legs_list=legs_list[1:]
     active_leg=legs_list[0]  # active_leg contient le numéro de la leg
-    print(legs_list)
-    print(active_leg)
     g._NUMSEQ=int(active_leg[0])
     return active_leg,legs_list
 
 
             
 def sequencing_conditions(aircraft, path):
-
+    
     if path.boolorth==False and path.booltrans==True and path.boolactive==True:
+        
         if path.transition.type=="Flyover":
-            g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
-            g._LISTPOINTS=g._LISTPOINTS[1:]
-            g._TOWPT=g._LISTPOINTS[1]
-            #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
-            print("ça séquence fort")
-            g._LISTPATHS[0].boolactive=False
-            return True
+            if g._MODE=='NAV':
+                g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
+                g._LISTPOINTS=g._LISTPOINTS[1:]
+                g._TOWPT=g._LISTPOINTS[1]
+                #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
+                print("ça séquence !")
+                g._LISTPATHS[0].boolactive=False
+                return True
+            
+            elif g._MODE=='HDG':
+                hdg=aircraft.hdg
+                v1=[-sin(hdg), cos(hdg)]
+                xs, ys, xe, ye = path.ortho.start.x, path.ortho.start.y, path.ortho.end.x, path.ortho.end.y
+                v2=[xe-xs, ye-ys]
+                if np.sign(np.vdot(v1,v2))>0 and aircraft.distance(path.ortho.end)<5:
+                    g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
+                    g._LISTPOINTS=g._LISTPOINTS[1:]
+                    g._TOWPT=g._LISTPOINTS[1]
+                    print("ça séquence en mode hdg !")
+                    g._LISTPATHS[0].boolactive=False
+                    return True 
+                
         elif path.transition.type=="Flyby" :
             xc, yc = path.transition.list_items[0].centre.x, path.transition.list_items[0].centre.y
             xwpt, ywpt = g._TOWPT.x, g._TOWPT.y
@@ -324,17 +331,27 @@ def sequencing_conditions(aircraft, path):
                 sgn=np.sign(aircraft.y-(a*aircraft.x+b))
             
             if g._SIGN!=sgn:
-                print(g._LEGLIST)
-                g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
-                g._LISTPOINTS=g._LISTPOINTS[1:]
-                g._TOWPT=g._LISTPOINTS[1]
-                print(g._LEGLIST)
-                print(g._LISTPOINTS)
-                #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
-                print("ça séquence fort")
-                g._LISTPATHS[0].boolactive=False
-                
-                return True
+                if g._MODE=='NAV':
+                    g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
+                    g._LISTPOINTS=g._LISTPOINTS[1:]
+                    g._TOWPT=g._LISTPOINTS[1]
+                    #g._TOWPT=Waypoint(g._ACTIVELEG[4],g._ACTIVELEG[5]) # A CONVERTIR EN NM ? (active_leg[3] et 4 et lat et long)
+                    print("ça séquence !")
+                    g._LISTPATHS[0].boolactive=False
+                    return True
+                elif g._MODE=='HDG':
+                    hdg=aircraft.hdg
+                    proj=ortho_projection(aircraft, path.ortho, path.transition)
+                    v1=[-sin(hdg), cos(hdg)]
+                    xe, ye = path.ortho.end.x, path.ortho.end.y
+                    v2=[proj.x-xe, proj.y-ye]
+                    if np.sign(np.vdot(v1,v2))>0 and aircraft.distance(path.ortho.end)<5:
+                        g._ACTIVELEG, g._LEGLIST=active_leg(g._LEGLIST)
+                        g._LISTPOINTS=g._LISTPOINTS[1:]
+                        g._TOWPT=g._LISTPOINTS[1]
+                        print("ça séquence en mode hdg !")
+                        g._LISTPATHS[0].boolactive=False
+                        return True 
         
     return False
      

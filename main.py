@@ -11,12 +11,13 @@ import time
 #192.168.43.255:2010
 if __name__=='__main__':
     app_name="GUID_SEQ_APP"
-    ivy_bus=""
+    ivy_bus="127.0.0.1:2010"
     bus=IvyInit(app_name,"GUID_SEQ is Ready",0,on_cx,on_die)
     IvyStart(ivy_bus)
     time.sleep(1)
     #sendData(11,25,35,1)
-    IvyBindMsg(recepTime,'^Time t=(.*)')    
+    IvyBindMsg(recepTime,'^Time t=(.*)')     # GC_AP Time=(.*) AP_State=(.*) AP_Mode='NAV'
+    IvyBindMsg(recepMode, 'GC_AP Time=(.*) AP_State=(.*) AP_Mode=(.*)')
 
     IvyBindMsg(recepLegList,'^FL_LegList Time=(.*) LegList=(.*)') # Reception de la liste des legs
     

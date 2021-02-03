@@ -4,152 +4,156 @@ from math import *
 import global_variables as g
 
 
-def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négatif si l'avion est à gauche
+def xtk(aircraft, path):  #xtk positive si l'avion est a droite et négative si l'avion est à gauche
     
-    #poinfue
-    if path.boolorth==True and path.booltrans==False:
+    """ Avion au niveau de l'ortho (True / False) """
+    if path.boolorth==True and path.booltrans==False:   
+       
+        proj=ortho_projection(aircraft, path.ortho, None)   #projete de l'avion sur l'ortho
+        se=[path.ortho.end.x-path.ortho.start.x,path.ortho.end.y-path.ortho.start.y,0]  #vecteur ortho.start-->ortho.end
+        ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]     #vecteur avion-->projete
+        s=np.sign(np.cross(se,ap)[2])   #Produit vectoriel pour determiner le signe de xtk
         
-        #print(path.ortho.start)
-        #print(path.ortho.end)
-        proj=ortho_projection(aircraft, path.ortho, None)
-        #print(proj)
-        se=[path.ortho.end.x-path.ortho.start.x,path.ortho.end.y-path.ortho.start.y,0]
-        ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]
-        s=np.sign(np.cross(se,ap)[2])
+        return s*aircraft.distance(proj)        #xtk signée
         
-        return s*aircraft.distance(proj)
-    
-    elif path.boolorth==False and path.booltrans==True:
+    """ Avion au niveau de la transition (False / True) """
+    elif path.boolorth==False and path.booltrans==True:     #False et True ==> avion au niveau de la transition
         
-        proj=ortho_projection(aircraft, path.ortho, path.transition)
-        #print(proj)
-        se=[proj.x-path.ortho.end.x,proj.y-path.ortho.end.y,0]
-        ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]
-        s=np.sign(np.cross(se,ap)[2])
+        proj=ortho_projection(aircraft, path.ortho, path.transition)    #projete de l'avion sur la transition
+        se=[proj.x-path.ortho.end.x,proj.y-path.ortho.end.y,0]      #vecteur l'ortho.end-->projete
+        ap=[proj.x-aircraft.x, proj.y-aircraft.y,0]     #vecteur avion-->projete
+        s=np.sign(np.cross(se,ap)[2])   #Produit vectoriel pour determiner le signe de xtk
         
-        return s*aircraft.distance(proj)
+        return s*aircraft.distance(proj)        #xtk signée
 
 
-def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du heading vers la trajectoire; heading entre nordMag et cap
+def tae(aircraft, path1, path2): # Signé en fonction du sens trigo tae : va du heading vers la trajectoire
 
     
     xs, ys, xe, ye = path1.ortho.start.x, path1.ortho.start.y, path1.ortho.end.x, path1.ortho.end.y
-    v1=[xe-xs, ye-ys, 0]
-    v2=[0,1,0]
-    s=np.sign(np.cross(v1,v2)[2])   
-    if path1.boolorth==True and path1.booltrans==False:
-        if s==0:
+    v1=[xe-xs, ye-ys, 0]    # vecteur ortho.start-->vecteur ortho.end
+    v2=[0,1,0]      #vecteur nord
+    s=np.sign(np.cross(v1,v2)[2])   #signe de la rotation
+    
+    if path1.boolorth==True and path1.booltrans==False: #niveau de l'ortho
+        if s==0:       #trajectoire et nord parallèles
             if ys<ye:
                 angle=0
             else:
                 angle=-pi
-        else:
+        else:          # angle = angle signé dans le sens trigo entre la trajectoire et le nord
             angle= -atan((path1.ortho.end.y - path1.ortho.start.y) / (path1.ortho.end.x - path1.ortho.start.x)) + s * pi / 2
         trackangleerror=aircraft.hdg-angle
         
+        #angle entre -pi et pi
         if trackangleerror>pi:
             trackangleerror+=-2*pi
         elif trackangleerror<-pi:
             trackangleerror+=2*pi
         return trackangleerror
 
-    elif path1.boolorth==False and path1.booltrans==True:
+    elif path1.boolorth==False and path1.booltrans==True: #niveau de la transition
         xs2, ys2 = path2.ortho.start.x, path2.ortho.start.y
         xc, yc = path1.transition.list_items[0].centre.x, path1.transition.list_items[0].centre.y
         if path1.transition.type== "Flyby":
-            v2 = [xs2 - xe, ys2 - ye, 0]
+            v2 = [xs2 - xe, ys2 - ye, 0]    # vecteur path1.ortho.end-->path2.ortho.start
             v3=[0,1,0]
-            if xc==aircraft.x:
-                s=np.sign(np.cross(v2,v3)[2])
-                angle=s*pi/2
+            if xc==aircraft.x: #trajectoire et nord perpendiculaires
+                s=np.sign(np.cross(v2,v3)[2])   #signe selon le sens de la trajectoire
+                angle=s*pi/2      #angle entre traj et nord
             else:
-                a=(yc-aircraft.y)/(xc-aircraft.x)    # Attention au cas ou droite verticale ou horizontale
-                v1=[1,-1/a,0]
-                if np.vdot(v1,v2)<0:
+                a=(yc-aircraft.y)/(xc-aircraft.x)   #coeff directeur de la droite avion et centre de la transition
+                v1=[1,-1/a,0]   #vecteur tangeant à la trajetoire 
+                if np.vdot(v1,v2)<0:    #V1 et v2 doivent etre dans le meme sens 
                     v1=[-1,1/a,0]
-                s=np.sign(np.cross(v1,v3)[2])
-                if a==0:
+                s=np.sign(np.cross(v1,v3)[2])       #signe de la rotation
+                if a==0:        # si a=0 alors traj et nord parallèles ==> angle = 0 ou pi
                     s = np.sign(np.vdot(v2, v3))
                     angle=pi/2-s*pi/2
-                else:    
-                    angle=-atan(-1/a)+s*pi/2
+                else:       
+                    angle=-atan(-1/a)+s*pi/2        #rotation de pi/2 selon le signe du produit vectoriel
             trackangleerror=aircraft.hdg-angle
+            
+            #angle entre -pi et pi
             if trackangleerror>pi:
                 trackangleerror+=-2*pi
             elif trackangleerror<-pi:
                 trackangleerror+=2*pi
             return trackangleerror
         
+        """ Fly over traité comme un flyby particulier"""
         elif path1.transition.type== "Flyover":
+            #Avion au niveau du premier arc
             if path1.transition.boolarc1==True:
                 return tae(aircraft, Path(path1.ortho, Transition("Flyby", [path1.transition.list_items[0]], False, True)), path2)
+            #Avion au niveau du segment
             elif path1.transition.boolseg==True:
                 return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), True, False), path2)
+            #Avion au niveau du deuxieme arc
             elif path1.transition.boolarc2==True:
                 return tae(aircraft, Path(path1.transition.list_items[1], Transition("Flyby", [path1.transition.list_items[2]]), False, True), path2)
-'''
-act=Aircraft(0,0,-pi/4)
-path=Path(Ortho(Point(0,0),Point(-60,-60)),Transition("Flyby",[Arc(Point(70,60),10,10)]))
-print(tae(act,path,None))
-'''
 
 
-def arc_distance(p1,p2,arc): # Calcul la distance entre deux points sur la transition
+def arc_distance(p1,p2,arc): # Calcul la distance entre deux points sur un arc
 
     center=arc.centre
     radius=arc.turn_radius
     c=p1.distance(p2)
-    alpha=acos((-c**2+2*(radius**2))/(2*(radius**2)))
+    alpha=acos((-c**2+2*(radius**2))/(2*(radius**2)))   #alpha = angle entre deux droites (centre--p1 et centre--p2)
     
     return alpha*radius
 
 def ortho_distance(p1,ortho): # Calcul la distance entre un point sur le segment et le point end du segment
-
     return p1.distance(ortho.end)
 
-def transition_distance(p1, p2, transition):
+def transition_distance(p1, p2, transition):    # Calcul la distance entre deux points sur une transition (flyby ou flyover)
     
     if transition.type=="Flyby":
         return arc_distance(p1,p2,transition.list_items[0])
     
+    """Flyover traité comme des flyby particuliers"""
     elif transition.type=="Flyover":
         seg = transition.list_items[1]
-        
+        #Avion au niveau du premier arc
         if transition.boolarc1==True:
             return arc_distance(p1, seg.start, transition.list_items[0])+ortho_distance(seg.start,seg)+arc_distance(seg.end, p2, transition.list_items[2])
-        
+        #Avion au niveau du segment
         elif transition.boolseg==True:  
             return ortho_distance(p1,seg)+arc_distance(seg.end, p2, transition.list_items[2])
-        
+        #Avion au niveau du deuxieme arc
         elif transition.boolarc2==True:
             return arc_distance(p1, p2, transition.list_items[2])
         
         
         
-def alongpath_distance(aircraft, path1, path2):
+def alongpath_distance(aircraft, path1, path2): #Calcul la along path distance entre les projetes de l'avion et du WPT sur la traj
     
+    #avion au niveau de l'ortho
     if path1.boolorth==True and path1.booltrans==False:
+        # path avec une transition differente de None
         if path1.transition.type!=None:
-            distseg=ortho_distance(ortho_projection(aircraft,path1.ortho,None),path1.ortho)
-            disttrans=transition_distance(path1.ortho.end,ortho_projection(g._TOWPT,path1.ortho,path1.transition),path1.transition)
+            distseg=ortho_distance(ortho_projection(aircraft,path1.ortho,None),path1.ortho) #distance sur le segment
+            disttrans=transition_distance(path1.ortho.end,ortho_projection(g._TOWPT,path1.ortho,path1.transition),path1.transition) #distance sur la transition
+        #path avec une transition None
         else:
             distseg = ortho_distance(ortho_projection(aircraft, path1.ortho, None), path1.ortho)
             disttrans=0
         return distseg+disttrans
     
-    elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==True: # Cas ou on est au niveau de la transition et on a pas changé de leg actif
+    #Avion au niveau de la transition et avant le sequencement (boolactive=True)
+    elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==True: 
     
         disttrans=transition_distance(ortho_projection(aircraft,path1.ortho,path1.transition),ortho_projection(g._TOWPT,path1.ortho,path1.transition),path1.transition)
-        
         return disttrans
     
-    elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==False and path2.transition.type!=None :  # Cas ou on est au niveau de la transition et on a changé de leg actif
-    
+    #Avion au niveau de la transition apres le sequencement (boolactive=False) et la deuxieme transition est differente de none
+    elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==False and path2.transition.type!=None : 
         disttrans1=transition_distance(ortho_projection(aircraft,path1.ortho,path1.transition),path2.ortho.start,path1.transition)
         distseg=ortho_distance(path2.ortho.start,path2.ortho)
         disttrans2=transition_distance(path2.ortho.end,ortho_projection(g._TOWPT,path2.ortho,path2.transition),path2.transition)
         return disttrans1+distseg+disttrans2
 
+    #Avion au niveau de la transition apres le sequencement (boolactive=False) avec une deuxieme transition None
     elif path1.boolorth==False and path1.booltrans==True and path1.boolactive==False and path2.transition.type==None :
 
         disttrans1 = transition_distance(ortho_projection(aircraft, path1.ortho, path1.transition), path2.ortho.start, path1.transition)
@@ -158,50 +162,55 @@ def alongpath_distance(aircraft, path1, path2):
   
 
 
-def ortho_projection(point, ortho, transition=None): #Renvoie la projection du point sur un segment (ortho) ou une transition 
-    
+def ortho_projection(point, ortho, transition=None): #Renvoie la projection du point sur une ortho ou sur une transition 
+    #projection sur l'ortho
     if transition==None:
         
+        #cas particuliers
         if(ortho.start.x==ortho.end.x):
             return(Point(ortho.start.x,point.y))
         elif(ortho.start.y==ortho.end.y):
             return(Point(point.x,ortho.start.y))
         
         else:
-            
-            a = (ortho.start.y-ortho.end.y)/(ortho.start.x-ortho.end.x)
-            b = ortho.start.y - a*ortho.start.x
+            #calcul de l'equation de l'ortho
+            a = (ortho.start.y-ortho.end.y)/(ortho.start.x-ortho.end.x) 
+            b = ortho.start.y - a*ortho.start.x    
+            #calcul de l'equation de la perpendiculaire à l'ortho
             a_norm = -1/a
             b_norm = point.y-(-1/a)*point.x
+            #calcul du point d'intersection
             x = (b_norm-b)/(a-a_norm)
             y = a*x + b 
             
         return (Point(x,y))
-    
-    elif transition.type=="Flyby":       # Problème si l'avion se trouve au centre de la transition (infinité de projections orthogonales sur le cercle !!!!)
+    #projection sur la transition
+    elif transition.type=="Flyby":       
         
-        if transition.list_items[0].centre.x == point.x:
+        if transition.list_items[0].centre.x == point.x:    #cas où l'avion et le centre de la transition ont le meme x
             x=transition.list_items[0].centre.x
             y=transition.list_items[0].centre.y+transition.list_items[0].turn_radius
-            v1=(ortho.end.x-ortho.start.x, ortho.end.y-ortho.start.y)
-            v2=(x-ortho.end.x, y-ortho.end.y)
-            if v1[0]*v2[0]+v1[1]*v2[1]<0:
+            v1=[ortho.end.x-ortho.start.x, ortho.end.y-ortho.start.y]
+            v2=[x-ortho.end.x, y-ortho.end.y]
+            if np.sign(np.vdot(v1,v2))<0:
                 y=transition.list_items[0].centre.y-transition.list_items[0].turn_radius
         else:
+            #calcul de l'equation de la droite centre--avion
             a = (transition.list_items[0].centre.y-point.y)/(transition.list_items[0].centre.x-point.x)
             b = point.y - a*point.x
             distcp=point.distance(transition.list_items[0].centre)
             radius=transition.list_items[0].turn_radius
             xa, ya, xc, yc = point.x, point.y, transition.list_items[0].centre.x, transition.list_items[0].centre.y
-            x=(((1/(2*(yc-ya)))*(distcp**2-2*distcp*radius-ya**2+yc**2-xa**2+xc**2))-b)/(a+((xc-xa)/(yc-ya)))
+            x=(((1/(2*(yc-ya)))*(distcp**2-2*distcp*radius-ya**2+yc**2-xa**2+xc**2))-b)/(a+((xc-xa)/(yc-ya))) #coordonnes en prenant les distances connues
             y=a*x+b
-            v1=(ortho.end.x-ortho.start.x, ortho.end.y-ortho.start.y)
-            v2=(x-ortho.end.x, y-ortho.end.y)
-            if v1[0]*v2[0]+v1[1]*v2[1]<0:
+            v1=[ortho.end.x-ortho.start.x, ortho.end.y-ortho.start.y]
+            v2=[x-ortho.end.x, y-ortho.end.y]
+            if np.sign(np.vdot(v1,v2))<0:   
                  x=(((1/(2*(yc-ya)))*(distcp**2+2*distcp*radius-ya**2+yc**2-xa**2+xc**2))-b)/(a+((xc-xa)/(yc-ya)))
                  y=a*x+b
         return(Point(x,y))
     
+    """flyover traités comme des flyby particuliers"""
     elif transition.type=="Flyover":
         
         if transition.boolarc1==True:

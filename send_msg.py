@@ -1,7 +1,7 @@
 # Envoi des messages
 
 from ivy.std_api import *
-
+import global_variables as g
 
 
 def sendActiveLeg(numSeq):          #Envoie le numéro de séquencencement du leg actif sur le bus IVY

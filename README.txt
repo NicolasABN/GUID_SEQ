@@ -15,4 +15,4 @@ Environnement :
 Pour lancer l'application :
 - Exécuter le main.py
 
-!! Pour relancer le main.py, il faut créer une nouvelle application pour se déconnecter du bus IVY
+!! Pour relancer le main.py, il faut créer une nouvelle console python pour se déconnecter du bus IVY
